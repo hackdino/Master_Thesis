@@ -1,0 +1,16 @@
+# TexStudio Output
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lol
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.cls
+*.bst
+*.bib
+PICs/
+
