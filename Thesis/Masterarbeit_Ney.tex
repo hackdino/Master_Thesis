@@ -26,6 +26,7 @@
 \documentclass[MES,Master,ngerman]{twbook}%\documentclass[Bachelor,BMR,german]{twbook}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{subcaption} 
 
 %
 % Bitte in der folgenden Zeile den Zitierstandard festlegen
@@ -168,6 +169,55 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 \subsection{IAR Embedded Workbench}
 \subsection{ARM Compiler}
 \chapter{Embedded C++}
+\subsection{Überblick}
+\subsection{C++ Konzepte}
+\subsection{Eingabe- und Ausgabestreams}
+\subsection{'auto'-Typ}
+\newpage
+\subsection{Funktionen Überladen}
+\subsubsection{Beispiel}
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={C++ Beispiel}}
+		\lstinputlisting{../Code_Samples/Funkionen_Uberladen/C++/main.cpp}
+		\label{fig:1}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C,caption={C Beispiel}}
+		\lstinputlisting{../Code_Samples/Funkionen_Uberladen/C/main.c}
+		\label{fig:2}
+	\end{subfigure}
+\end{figure}
+
+\subsubsection{Analyse}
+\newpage
+\subsection{Funktions Templates}
+\subsubsection{Beispiel}
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={C++ Beispiel}, keepspaces=true}
+		\lstinputlisting{../Code_Samples/Funkions_Templates/C++/main.cpp}
+		\label{fig:3}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C,caption={C Beispiel}}
+		\lstinputlisting{../Code_Samples/Funkions_Templates/C/main.c}
+		\label{fig:4}
+	\end{subfigure}
+\end{figure}
+\subsection{Funktionen Überladen}
+\subsubsection{Beispiel}
+
+\subsection{Arrays vs 'std::vector'}
+\subsection{Pointer vs Referenzen}
+\subsection{Namespaces}
+\subsection{Dynamische Speicher Verwaltung}
+\subsection{Klassen}
+\subsubsection{Konstruktoren}
+\subsubsection{Destruktoren}
 \section{Überblick}
 
 
