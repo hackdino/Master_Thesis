@@ -175,8 +175,9 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 \subsection{'auto'-Typ}
 \newpage
 \subsection{Funktionen Überladen}
+C++ bietet ein Mechanismus indem man mehrere Funktionen mit dem gleichen Namen deklarieren kann, diese sich jedoch in ihrer Signatur unterscheiden müssen. Somit kann man bestehende Funktionen überladen, indem man die Datentypen oder Anzahl der Parameter verändert. Der Compiler sucht sich dann die Funktion mit der passenden Signatur heraus. 
 \subsubsection{Beispiel}
-
+Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textbf{int} und \textbf{double} Werte addieren kann. Im klassischen C müsste man 2 Funktionen deklarieren die sich jeweils in ihrem Namen unterscheiden, wohingegen man in C++ nochmal den gleichen Namen für die Funktion verwenden kann.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C++ Beispiel}}
@@ -192,8 +193,34 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 \end{figure}
 
 \subsubsection{Analyse}
+Beide Compiler generieren jeweils eine Funktion für \textbf{int} (0x30 byte) und eine für \textbf{double} (0x4c byte). Beim C++ Compiler kann man erkennen das dieser automatisch 2 Funktionen mit dem Index 'ii' und 'dd' erstellt. Somit kann man sagen das Funktions- Überladungen keinen Speicher Overhead erzeugen. Zudem erspart man sich lange Funktions- Namen und vermeidet dass man im Code irrtümlicherweise die falsche Funktion aufruft.
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Compiler Output C++}, language=bash, numbers=none]
+		$ arm-none-eabi-nm.exe a.out --print-size
+		...
+		00008244 00000030 T _Z8addierenii
+		00008274 0000004c T _Z8addierendd
+		...
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Compiler Output C}, language=bash, numbers=none]
+		$ arm-none-eabi-nm.exe a.out --print-size
+		...
+		00008244 00000030 T add_i
+		00008274 0000004c T add_d
+		...
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+
+\subsubsection{Fazit}
+Funktions- Überladungen erzeugt keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Default Arguments} wie es sie in C++ gibt schöneren Code erzeugen.
+
 \newpage
-\subsection{Funktions Templates}
+\subsection{Funktions- Templates}
 \subsubsection{Beispiel}
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
