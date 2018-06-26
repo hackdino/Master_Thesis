@@ -176,8 +176,8 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 \newpage
 \subsection{Funktionen Überladen}
 C++ bietet ein Mechanismus indem man mehrere Funktionen mit dem gleichen Namen deklarieren kann, diese sich jedoch in ihrer Signatur unterscheiden müssen. Somit kann man bestehende Funktionen überladen, indem man die Datentypen oder Anzahl der Parameter verändert. Der Compiler sucht sich dann die Funktion mit der passenden Signatur heraus. 
-\subsubsection{Beispiel}
-Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textbf{int} und \textbf{double} Werte addieren kann. Im klassischen C müsste man 2 Funktionen deklarieren die sich jeweils in ihrem Namen unterscheiden, wohingegen man in C++ nochmal den gleichen Namen für die Funktion verwenden kann.
+\subsubsection{Beispiel} \label{beispiel:1}
+Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textbf{int} und \textbf{double} Werte addieren kann. Im klassischen C müsste man 2 Funktionen deklarieren die sich jeweils in ihrem Namen unterscheiden, wohingegen man in C++ den gleichen Funktions- Namen erneut verwenden darf.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C++ Beispiel}}
@@ -217,11 +217,13 @@ Beide Compiler generieren jeweils eine Funktion für \textbf{int} (0x30 byte) un
 \end{figure}
 
 \subsubsection{Fazit}
-Funktions- Überladungen erzeugt keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Default Arguments} wie es sie in C++ gibt schöneren Code erzeugen.
+Funktions- Überladungen erzeugen keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Default Arguments} wie es sie in C++ gibt schöneren Code erzeugen.
 
 \newpage
 \subsection{Funktions- Templates}
+Oftmals muss man eine und dieselbe Funktion für verschiedene Datentypen implementieren. In C++ kann man dieses Problem mit Templates sehr elegant lösen. Templates stellen eine Art Schablone dar mit denen man Funktionen unabhängig von einem bestimmten Datentypen implementieren kann. Dies ist vor allem bei Manipulationen von Listen oder Arrays sehr interessant.
 \subsubsection{Beispiel}
+Das nachfolgende Beispiel zeigt wie man in C++ eine Funktion die 2 Werte addieren soll unabhängig von dessen Datentypen implementieren kann. Erkennbar ist auch dass die C++ Variante wesentlich kürzer und somit auch übersichtlicher als die Version in C wirkt.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C++ Beispiel}, keepspaces=true}
@@ -235,8 +237,34 @@ Funktions- Überladungen erzeugt keinen Speicher Overhead und sind zu empfehlen 
 		\label{fig:4}
 	\end{subfigure}
 \end{figure}
-\subsection{Funktionen Überladen}
-\subsubsection{Beispiel}
+\subsubsection{Analyse}
+Als auch schon vorigen Beispiel \ref{beispiel:1} generiert der C und C++ Compiler jeweils eine Funktion für die \textbf{int} und \textbf{double} Addition. Somit erzeugen Funktion- Templates bei richtiger Verwendung auch keinen Speicher Overhead. Erkennbar ist das der C++ Compiler die 2 Funktionen jeweils als 'WEAK' markiert. Somit wird die Template Funktion nicht als fixes Objekt deklariert und könnte von einer anderen implemetierung in einer andern Datei überschrieben werden. Um dies zu verhindern sollte sich Templates definitionen immer in einer Headerdatei befinden und wenn nötig eingebunden werden.
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Compiler Output C++}, language=bash, numbers=none]
+		$ arm-none-eabi-nm.exe a.out --print-size
+		...
+		000082c8 00000030 W _Z3addIiET_S0_S0_
+		000082f8 0000004c W _Z3addIdET_S0_S0_
+		...
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Compiler Output C}, language=bash, numbers=none]
+		$ arm-none-eabi-nm.exe a.out --print-size
+		...
+		00008244 00000030 T add_i
+		00008274 0000004c T add_d
+		...
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+
+\subsubsection{Fazit}
+Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion fixen muss und somit eine sehr häufige Fehlerquelle ausschließen. 
+
+\newpage
 
 \subsection{Arrays vs 'std::vector'}
 \subsection{Pointer vs Referenzen}
@@ -245,7 +273,6 @@ Funktions- Überladungen erzeugt keinen Speicher Overhead und sind zu empfehlen 
 \subsection{Klassen}
 \subsubsection{Konstruktoren}
 \subsubsection{Destruktoren}
-\section{Überblick}
 
 
 
