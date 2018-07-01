@@ -168,8 +168,32 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 \subsection{GNU Arm Embedded Toolchain}
 \subsection{IAR Embedded Workbench}
 \subsection{ARM Compiler}
+
+
 \chapter{Embedded C++}
 \subsection{Überblick}
+In diesem Kapitel werden verschiedene Konzepte von C++ näher analysiert um klare Aussagen über Speicherverbrauch und Performance liefern zu können. Es soll zugleich als eine Art Guideline für Embedded Programmierer dienen um C++ effizient einsetzen zu können. \newline 
+
+Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Compiler, Linker und Co. auch noch viele nützliche Tools zur Analyse mitliefert. Verschieden Tools die in den nachfolgenden Kapiteln zum Einsatz kommen werden in Tabelle \ref{tbl:analystools} aufgelistet.
+
+\begin{table}[!htb]
+	\centering
+	\begin{tabular}{| l | c | r |}
+		\hline
+		\textbf{Tool}  & \textbf{Beschreibung} \\ \hline
+		arm-none-eabi-g++           & C++ Compiler (Präprozessor , Kompiler, Linker) \\ \hline
+		arm-none-eabi-gcc       	& C	  Compiler (Präprozessor , Kompiler, Linker) \\ \hline
+		arm-mone-eabi-nm        	& Listet Symbole aus Objekt Dateien \\ \hline
+		arm-none-eabi-objdump		& Zur erweiterten Analyse von Objekt Dateien \\ \hline
+		arm-none-eabi-size			& Zeigt Größe der verschieden Link Segmente (Text, Data, BSS) \\ \hline
+	\end{tabular}
+	
+	\caption{Analyse Tools}
+	\label{tbl:analystools}
+	% Verweis im Text mittels \ref{tbl:beispieltabelle}
+	
+\end{table}
+
 \subsection{C++ Konzepte}
 \subsection{Eingabe- und Ausgabestreams}
 \subsection{'auto'-Typ}
@@ -262,7 +286,7 @@ Als auch schon vorigen Beispiel \ref{beispiel:1} generiert der C und C++ Compile
 \end{figure}
 
 \subsubsection{Fazit}
-Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion fixen muss und somit eine sehr häufige Fehlerquelle ausschließen. 
+Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion beheben muss und somit eine sehr häufige Fehlerquelle ausschließen. 
 
 \newpage
 
