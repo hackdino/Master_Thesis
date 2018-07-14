@@ -196,6 +196,8 @@ Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Com
 
 \subsection{C++ Konzepte}
 \subsection{Eingabe- und Ausgabestreams}
+
+\newpage
 \subsection{'auto'-Typ}
 \newpage
 \subsection{Funktionen Überladen}
@@ -290,7 +292,31 @@ Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man
 
 \newpage
 
-\subsection{Arrays vs 'std::vector'}
+\subsection{Arrays}
+In C++ gibt es mehrere Möglichkeiten Daten in Arrays zusammenzufassen. C- Array, sdt::vector und std::array sind die 3 bekanntesten Modelle um Daten zu speichern und werden in diesem Kapitel näher unter die Lupe genommen. Als embedded Programmierer sollte man genau wissen welche Methode für den jeweiligen Anwendungsfall die beste Wahl ist.
+
+\subsubsection{C- Array / std::arry}
+Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ verwendet werden. Jedoch sollte man in neuen Programmen darauf verzichten da es in der Standard C++ Bibliothek verschiedene Container Klassen gibt die übersichtlicher aufgebaut sind und somit gängige Fehler im Vorhinein eliminieren. Die sdt::array Containerklasse is das Pendant zum C- Array, bietet jedoch einige Vorteile was Elementzugriff oder Informationen über die Kapazität das Arrays betrifft. Näher zu erwähnen ist die Methode \textbf{at} mit der man Zugriff auf einzelne Elemente des Arrays bekommt, jedoch gegenüber \textbf{[ ]} eine Grenzeinüberprüfung während der Laufzeit stattfindet. Dies kann sehr nützlich sein da der Zugriff auf nicht existierende Elemente einer der häufigsten Fehler bei C- Arrays darstellt. \newline \newline Ein zusätzlicher Vorteil bieten die Standard C++ Container Klassen da diese Iteratoren zu Verfügung stellen womit man verschiedene Algorithmen der Standard Bibliothek verwenden kann. Somit kann man auf vorhandenen und getesteten Code zurückgreifen wenn es ums sortieren oder das manipulieren eines Arrays geht.
+
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={C- Array}}
+		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/C_Array/c_array.cpp}
+		\label{fig:5}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={std::array}}
+		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/std_array/stdArray.cpp}
+		\label{fig:6}
+	\end{subfigure}
+\end{figure}
+
+\subsubsection{std::vector}
+
+
+
 \subsection{Pointer vs Referenzen}
 \subsection{Namespaces}
 \subsection{Dynamische Speicher Verwaltung}
