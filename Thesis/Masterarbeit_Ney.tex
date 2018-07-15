@@ -293,10 +293,10 @@ Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man
 \newpage
 
 \subsection{Arrays}
-In C++ gibt es mehrere Möglichkeiten Daten in Arrays zusammenzufassen. C- Array, sdt::vector und std::array sind die 3 bekanntesten Modelle um Daten zu speichern und werden in diesem Kapitel näher unter die Lupe genommen. Als embedded Programmierer sollte man genau wissen welche Methode für den jeweiligen Anwendungsfall die beste Wahl ist.
+In C++ gibt es mehrere Möglichkeiten Daten in Arrays zusammenzufassen. C- Array, \textit{sdt::vector} und \textit{std::array} sind die 3 bekanntesten Modelle um Daten zu speichern und werden in diesem Kapitel näher unter die Lupe genommen. Als embedded Programmierer sollte man genau wissen welche Methode für den jeweiligen Anwendungsfall die beste Wahl ist.
 
-\subsubsection{C- Array / std::arry}
-Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ verwendet werden. Jedoch sollte man in neuen Programmen darauf verzichten da es in der Standard C++ Bibliothek verschiedene Container Klassen gibt die übersichtlicher aufgebaut sind und somit gängige Fehler im Vorhinein eliminieren. Die sdt::array Containerklasse is das Pendant zum C- Array, bietet jedoch einige Vorteile was Elementzugriff oder Informationen über die Kapazität das Arrays betrifft. Näher zu erwähnen ist die Methode \textbf{at} mit der man Zugriff auf einzelne Elemente des Arrays bekommt, jedoch gegenüber \textbf{[ ]} eine Grenzeinüberprüfung während der Laufzeit stattfindet. Dies kann sehr nützlich sein da der Zugriff auf nicht existierende Elemente einer der häufigsten Fehler bei C- Arrays darstellt. \newline \newline Ein zusätzlicher Vorteil bieten die Standard C++ Container Klassen da diese Iteratoren zu Verfügung stellen womit man verschiedene Algorithmen der Standard Bibliothek verwenden kann. Somit kann man auf vorhandenen und getesteten Code zurückgreifen wenn es ums sortieren oder das manipulieren eines Arrays geht.
+\subsubsection{C- Array / std::array}
+Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ weiter verwendet werden. Jedoch sollte man in neuen Projekten darauf verzichten da es in der Standard C++ Bibliothek verschiedene Containerklassen gibt die übersichtlicher aufgebaut sind und somit gängige Fehler im Vorhinein eliminieren. Die \textit{std::array} Containerklasse is das Pendant zum C- Array, bietet jedoch einige Vorteile was Elementzugriff oder Informationen über die Kapazität das Arrays betrifft. Näher zu erwähnen ist die Methode \textbf{at} mit der man Zugriff auf einzelne Elemente des Arrays bekommt, jedoch gegenüber \textbf{[ ]} eine Grenzen Überprüfung während der Laufzeit stattfindet. Dies kann sehr nützlich sein da der Zugriff auf nicht existierende Elemente einer der häufigsten Fehler bei C- Arrays darstellt. \newline \newline Ein zusätzlicher Vorteil bieten die Standard C++ Containerklassen da diese Iteratoren zu Verfügung stellen womit man verschiedene Algorithmen der Standard Bibliothek verwenden kann. Somit kann man auf vorhandenen und getesteten Code zurückgreifen wenn es ums sortieren oder das manipulieren eines Arrays geht. \newline \newline Das nachfolgende Beispiel zeigt wie man mittels C- Array und \textit{std::array} ein \textbf{int} Array mit jeweils 10 Elementen mit 0 initialisiert und dann mit Daten befühlt.
 
 
 \begin{figure}[!htb]
@@ -314,9 +314,44 @@ Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ ve
 \end{figure}
 
 \subsubsection{std::vector}
+Bei der \textit{sdt::vector} Containerklasse hat man die Möglichkeit die Größe des Arrays dynamisch anzupassen. Somit ist \textit{sdt::vector} wesentlich komplexer und mit Vorsicht zu genießen da Speicher zur Laufzeit am Stack oder Heap alloziert werden muss. Bei embedded Projekten sollte man auf die \textit{sdt::vector} Klasse verzichten und wenn eine dynamische Speicherverwaltung von Nöten ist bieten gängige RTOS oder OS Systeme bessere Mechanismen an, die im Fehlerfall (Heap/Stack Überläufe) wesentlich besser zu Debuggen sind.
+
+\subsubsection{Analyse}
+Kompiliert man die C- Array und \textit{std::array} Variante jeweils mit der Optimierungsstufe \textbf{-0s} kann man keinen unterschied zwischen den beiden Implementierungen feststellen. Jedoch einsteht ein geringer Overheat bei Verwendung von \textit{std::array} in Kombination mit niedrigeren Optimierungsstufen die durch die höhere Abstraktion zum eigentlichen Speicher Segment zu erklären ist. Auch zu erkennen ist dass bei beiden Implementierungen jeweils Speicher für genau 10 \textbf{int} Werte statisch in der \textbf{bss} Sektion reserviert wird.
 
 
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={C- Array}, language=bash, numbers=none]
+		$ arm-none-eabi-size a.out
+		text  data  bss  dec   hex
+		1840  1092  64   2996  bb4
+		
+		$ arm-none-eabi-nm a.out --print-size
+		...
+		00018bb0 00000028 B a
+		...
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={std::array}, language=bash, numbers=none]
+		$ arm-none-eabi-size a.out
+		text  data  bss  dec   hex
+		1840  1092  64   2996  bb4
+		
+		$ arm-none-eabi-nm a.out --print-size
+		...
+		00018bb0 00000028 B a
+		...
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
 
+\subsubsection{Fazit}
+Schlussfolgernd kann man Sagen dass \textit{std::array} ohne weiteres in embedded Projekten verwenden werden darf und eine Reihe von Vorteilen gegenüber dem C- Array bietet. Auch die Kompatibilität zu älterem Code der möglicherweise noch klassische Pointer benötigt sollte kein Problem darstellen da man mit der \textit{std::array} Methode \textbf{data} direkten Zugriff auf das darunterliegende Array bekommt. In der Standard C++ Bibliothek findet man auch noch einige andere Containerklassen wie \textit{std::list} oder \textit{std::deque} die sich zur Speicherung von Daten anbieten, jedoch auch wie \textit{std::vector} wesentlich komplexer sind und somit nur zum Einsatz kommen sollten wenn Speicherverbrauch und CPU Auslastung keine wesentliche Rolle spielen.
+\newpage
+\subsection{Zeichenketten}
 \subsection{Pointer vs Referenzen}
 \subsection{Namespaces}
 \subsection{Dynamische Speicher Verwaltung}
