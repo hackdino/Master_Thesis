@@ -1,10 +1,10 @@
 
 
-const char str[] = {"HALLO WELT"};
+char str[] = {"HALLO WELT"};
 
 int main() {
   
-  for(size_t i=0; i<sizeof(str); i++){
+  for(int i=0; i<sizeof(str); i++){
     str[i] += 32;
   }
   

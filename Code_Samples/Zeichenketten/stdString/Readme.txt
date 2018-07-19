@@ -1,5 +1,5 @@
 // Compile
-arm-none-eabi-g++ -Os --specs=nosys.specs stdArray.cpp
+arm-none-eabi-g++ -Os --specs=nosys.specs stdString.cpp
 
 //Analyse
 arm-none-eabi-size a.out

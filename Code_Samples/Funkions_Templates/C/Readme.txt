@@ -1,5 +1,5 @@
 Compile:
-arm-none-eabi-gcc --specs=nosys.specs main.c
+arm-none-eabi-gcc -c -Os main.c
 
 Analyse:
-arm-none-eabi-nm.exe a.out --print-size
+arm-none-eabi-nm main.o --print-size

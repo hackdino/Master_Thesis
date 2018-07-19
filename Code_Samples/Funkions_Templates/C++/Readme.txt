@@ -1,5 +1,5 @@
 Compile:
-arm-none-eabi-c++ --specs=nosys.specs main.cpp
+arm-none-eabi-g++ -c -Os main.cpp
 
 Analyse:
-arm-none-eabi-nm.exe a.out --print-size
+arm-none-eabi-nm main.o --print-size

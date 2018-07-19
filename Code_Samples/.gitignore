@@ -1,4 +1,4 @@
 # Generate from compiler
 *.out
-
+*.o
 

@@ -223,20 +223,20 @@ Beide Compiler generieren jeweils eine Funktion für \textbf{int} (0x30 byte) un
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\begin{lstlisting}[gobble=6, title={Compiler Output C++}, language=bash, numbers=none]
-		$ arm-none-eabi-nm.exe a.out --print-size
+		$ arm-none-eabi-nm main.o --print-size
 		...
-		00008244 00000030 T _Z8addierenii
-		00008274 0000004c T _Z8addierendd
+		00000008 00000010 T _Z3adddd
+		00000000 00000008 T _Z3addii
 		...
 		\end{lstlisting}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
 		\begin{lstlisting}[gobble=6, title={Compiler Output C}, language=bash, numbers=none]
-		$ arm-none-eabi-nm.exe a.out --print-size
+		$ arm-none-eabi-nm main.o --print-size
 		...
-		00008244 00000030 T add_i
-		00008274 0000004c T add_d
+		00000008 00000010 T add_d
+		00000000 00000008 T add_i
 		...
 		\end{lstlisting}
 	\end{subfigure}
@@ -280,8 +280,8 @@ Als auch schon vorigen Beispiel \ref{beispiel:1} generiert der C und C++ Compile
 		\begin{lstlisting}[gobble=6, title={Compiler Output C}, language=bash, numbers=none]
 		$ arm-none-eabi-nm.exe a.out --print-size
 		...
-		00008244 00000030 T add_i
-		00008274 0000004c T add_d
+		00000008 00000010 T add_d
+		00000000 00000008 T add_i
 		...
 		\end{lstlisting}
 	\end{subfigure}
