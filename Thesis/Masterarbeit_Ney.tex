@@ -203,7 +203,7 @@ Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Com
 \subsection{Funktionen Überladen}
 C++ bietet ein Mechanismus indem man mehrere Funktionen mit dem gleichen Namen deklarieren kann, diese sich jedoch in ihrer Signatur unterscheiden müssen. Somit kann man bestehende Funktionen überladen, indem man die Datentypen oder Anzahl der Parameter verändert. Der Compiler sucht sich dann die Funktion mit der passenden Signatur heraus. 
 \subsubsection{Beispiel} \label{beispiel:1}
-Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textbf{int} und \textbf{double} Werte addieren kann. Im klassischen C müsste man 2 Funktionen deklarieren die sich jeweils in ihrem Namen unterscheiden, wohingegen man in C++ den gleichen Funktions- Namen erneut verwenden darf.
+Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textit{int} und \textit{double} Werte addieren kann. Im klassischen C müsste man 2 Funktionen deklarieren die sich jeweils in ihrem Namen unterscheiden, wohingegen man in C++ den gleichen Funktionsnamen erneut verwenden darf.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C++ Beispiel}}
@@ -219,40 +219,46 @@ Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textbf{int} und \
 \end{figure}
 
 \subsubsection{Analyse}
-Beide Compiler generieren jeweils eine Funktion für \textbf{int} (0x30 byte) und eine für \textbf{double} (0x4c byte). Beim C++ Compiler kann man erkennen das dieser automatisch 2 Funktionen mit dem Index 'ii' und 'dd' erstellt. Somit kann man sagen das Funktions- Überladungen keinen Speicher Overhead erzeugen. Zudem erspart man sich lange Funktions- Namen und vermeidet dass man im Code irrtümlicherweise die falsche Funktion aufruft.
+Beide Compiler generieren jeweils eine Funktion für \textit{int} (48 byte) und eine für \textit{double} (76 byte). Beim C++ Compiler kann man erkennen das dieser automatisch 2 verschiedene Funktionen mit dem Index 'ii' und 'dd' erstellt. Somit kann man sagen das Funktions- Überladungen keinen Speicher Overhead erzeugen. Zusätzlich kann man lange Funktionsnamen vermeiden und die Wahrscheinlichkeit das man irrtümlicherweise die falsche Funktion verwendet sinkt erheblich.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
-		\begin{lstlisting}[gobble=6, title={Compiler Output C++}, language=bash, numbers=none]
+		\begin{lstlisting}[gobble=6, title={Analyse C++}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -O0 main.cpp
 		$ arm-none-eabi-nm main.o --print-size
 		...
-		00000008 00000010 T _Z3adddd
-		00000000 00000008 T _Z3addii
+		00000030 0000004c t _ZL3adddd
+		00000000 00000030 t _ZL3addii
 		...
 		\end{lstlisting}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
-		\begin{lstlisting}[gobble=6, title={Compiler Output C}, language=bash, numbers=none]
+		\begin{lstlisting}[gobble=6, title={Analyse C}, language=bash, numbers=none]
+		$ arm-none-eabi-gcc -c -O0 main.c
 		$ arm-none-eabi-nm main.o --print-size
 		...
-		00000008 00000010 T add_d
-		00000000 00000008 T add_i
+		00000030 0000004c t add_d
+		00000000 00000030 t add_i
 		...
 		\end{lstlisting}
 	\end{subfigure}
 \end{figure}
 
 \subsubsection{Fazit}
-Funktions- Überladungen erzeugen keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Default Arguments} wie es sie in C++ gibt schöneren Code erzeugen.
+Funktions- Überladungen erzeugen keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Standardparametern} (Default Arguments) wie es sie in C++ gibt schöneren Code erzeugen.
+
+\newpage
+\subsection{Standardparameter}
 
 \newpage
 \subsection{Funktions- Templates}
-Oftmals muss man eine und dieselbe Funktion für verschiedene Datentypen implementieren. In C++ kann man dieses Problem mit Templates sehr elegant lösen. Templates stellen eine Art Schablone dar mit denen man Funktionen unabhängig von einem bestimmten Datentypen implementieren kann. Dies ist vor allem bei Manipulationen von Listen oder Arrays sehr interessant.
+Oftmals muss man eine und dieselbe Funktion für verschiedene Datentypen implementieren. In C++ kann man dieses Problem mit Templates sehr elegant lösen. Templates stellen eine Art Schablone dar mit denen man Funktionen unabhängig von einem bestimmten Datentypen implementieren kann. Dies ist vor allem bei Manipulationen von Listen oder Arrays interessant da man den Algorithmus nicht für jeden Datentyp erneut implementieren muss. 
+
 \subsubsection{Beispiel}
 Das nachfolgende Beispiel zeigt wie man in C++ eine Funktion die 2 Werte addieren soll unabhängig von dessen Datentypen implementieren kann. Erkennbar ist auch dass die C++ Variante wesentlich kürzer und somit auch übersichtlicher als die Version in C wirkt.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
-		\lstset{language=C++,caption={C++ Beispiel}, keepspaces=true}
+		\lstset{language=C++,caption={C++ Beispiel}}
 		\lstinputlisting{../Code_Samples/Funkions_Templates/C++/main.cpp}
 		\label{fig:3}
 	\end{subfigure}
@@ -264,32 +270,77 @@ Das nachfolgende Beispiel zeigt wie man in C++ eine Funktion die 2 Werte addiere
 	\end{subfigure}
 \end{figure}
 \subsubsection{Analyse}
-Als auch schon vorigen Beispiel \ref{beispiel:1} generiert der C und C++ Compiler jeweils eine Funktion für die \textbf{int} und \textbf{double} Addition. Somit erzeugen Funktion- Templates bei richtiger Verwendung auch keinen Speicher Overhead. Erkennbar ist das der C++ Compiler die 2 Funktionen jeweils als 'WEAK' markiert. Somit wird die Template Funktion nicht als fixes Objekt deklariert und könnte von einer anderen implemetierung in einer andern Datei überschrieben werden. Um dies zu verhindern sollte sich Templates definitionen immer in einer Headerdatei befinden und wenn nötig eingebunden werden.
+
+Beide Versionen wurden mit der Compiler Optimierung \textbf{-O0} kompiliert. Analysiert man beide Objekt Dateien findet man jeweils 2 Versionen von der Addier- Funktion. Bei der C Variante heißen die Funktionen genau gleich wie im Quellcode deklariert, wohingegen eine automatische Indexierung bei der C++ Variante erfolgt. In beiden Versionen werden jeweils 64 byte für die \textit{uint8\_t} und 72 byte für die \textit{int16\_t} Funktion alloziert. Es kann durchaus sein dass bei anderen Optimierungsstufen die Funktionen als inline kompiliert werden, jedoch entsteht auch dann nie ein Unterschied zwischen der C und C++ Version.
+
+
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
-		\begin{lstlisting}[gobble=6, title={Compiler Output C++}, language=bash, numbers=none]
-		$ arm-none-eabi-nm.exe a.out --print-size
+		\begin{lstlisting}[gobble=6, title={Analyse C++}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -O0 main.cpp
+		$ arm-none-eabi-nm a.out --print-size
 		...
-		000082c8 00000030 W _Z3addIiET_S0_S0_
-		000082f8 0000004c W _Z3addIdET_S0_S0_
+		00000000 00000040 W _Z3addIhET_S0_S0_
+		00000000 00000048 W _Z3addIsET_S0_S0_
 		...
 		\end{lstlisting}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
-		\begin{lstlisting}[gobble=6, title={Compiler Output C}, language=bash, numbers=none]
-		$ arm-none-eabi-nm.exe a.out --print-size
+		\begin{lstlisting}[gobble=6, title={Analyse C}, language=bash, numbers=none]
+		$ arm-none-eabi-gcc -c -O0 main.c
+		$ arm-none-eabi-nm a.out --print-size
 		...
-		00000008 00000010 T add_d
-		00000000 00000008 T add_i
+		00000000 00000040 t a
+		00000040 00000048 t b
+		...
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+
+Zudem kann man erkennen das die Funktionen in der C Version mit \textbf{t} markiert sind und somit in die \textit{.text} Sektion gelinkt werden. Würde man in einer anderen C Datei genau die gleiche Funktionen implementieren würde man nach dem linken 2 Versionen von genau der gleichen Funktion in der auszuführenden Datei (Executable) finden. Hierbei sind die Funktionen a und b fest an die jeweilige Objektdatei gebunden. In der C++ Version sind beide Funktionen als WEAK deklariert und befinden sich in einer eigenen Link Sektion. Dies ermöglicht es dem Linker Optimierungen vorzunehmen falls es mehrere Implementierungen des gleichen Templates in verschieden Objekt Dateien gibt. Dieses Compiler Verhalten ist auch unter dem Namen \textbf{Borland Model} bekannt.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse C++}, language=bash, numbers=none]
+		$ arm-none-eabi-objdump -d main.o
+
+		-> .text:
+		00000000 <main>:
+		...
+		
+		-> .text._Z3addIhET_S0_S0_:
+		00000000 <_Z3addIhET_S0_S0_>:
+		...
+
+		-> .text._Z3addIsET_S0_S0_:
+		00000000 <_Z3addIsET_S0_S0_>:
+		...
+		
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse C}, language=bash, numbers=none]
+		$ arm-none-eabi-objdump -d main.o
+		
+		-> .text:
+		00000088 <main>:
+		...
+		
+		
+		00000000 <a>:
+		...
+		
+		
+		00000040 <b>:
 		...
 		\end{lstlisting}
 	\end{subfigure}
 \end{figure}
 
 \subsubsection{Fazit}
-Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion beheben muss und somit eine sehr häufige Fehlerquelle ausschließen. 
-
+Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion beheben muss und somit die Wartbarkeit erheblich erhöhen. Zudem kann sich die Verwendung von Templates positiv auf die Größe des Executables auswirken da der Linker Optimierungen vornehmen kann. Templates sollten auch wenn möglich in einer header Datei definiert werden und wenn nötig in der .cpp Datei eingebunden werden. Bei großen Projekten kann sich dies jedoch negativ auf die Übersetzungszeit auswirken da der Template Code mehrmals kompiliert werden muss.
 \newpage
 
 \subsection{Arrays}

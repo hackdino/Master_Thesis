@@ -1,20 +1,19 @@
 #include <stdint.h>
+volatile uint8_t a_1=3, a_2=4, a_3=0;
+volatile int16_t b_1=5, b_2=6, b_3=0;
 
-uint8_t add_i(uint8_t a, uint8_t b){
+static uint8_t a(uint8_t a, uint8_t b){
   return a + b;
 }
 
-uint16_t add_d(uint16_t a, uint16_t b){
+static int16_t b(int16_t a, int16_t b){
   return a + b;
 }
 
 int main() {
-    
-  volatile uint8_t ival_a=3, ival_b=4, iret;
-  volatile uint16_t dval_a=3, dval_b=4, dret;
 
-  iret = add_i(ival_a, ival_b);
-  dret = add_d(dval_a, dval_b);
+  a_3 = a(a_1, a_2);
+  b_3 = b(b_1, b_2);
 
   return 0;
 }

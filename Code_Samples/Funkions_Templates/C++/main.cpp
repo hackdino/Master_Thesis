@@ -1,18 +1,19 @@
+#include <stdint.h>
+volatile uint8_t a_1=3, a_2=4, a_3=0;
+volatile int16_t b_1=5, b_2=6, b_3=0;
+
 template <typename T> T add(T a, T b) {
   return a + b;
 }
 
+
+
+
+
 int main() {
-    
-  volatile int ival_a=3, ival_b=4, iret;
-  volatile double dval_a=3.0, dval_b=5.0, dret;
 
-  iret = add(ival_a, ival_b);
-  dret = add(dval_a, dval_b);
+  a_3 = add(a_1, a_2);
+  b_3 = add(b_1, b_2);
 
-  return iret+dret;
+  return 0;
 }
-
-
-
-/*EOF*/
