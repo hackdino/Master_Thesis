@@ -249,10 +249,61 @@ Funktions- Überladungen erzeugen keinen Speicher Overhead und sind zu empfehlen
 
 \newpage
 \subsection{Standardparameter}
+Bei der Initialisierung von Hardware Modulen sind oft Standardparameter sinnvoll. Bei einer Seriellen Schnittelle ist die Konfiguration \textit{9600 8N1} für viele Anwendungen schon ausreichend. In C++ kann man Funktionsparameter mit festen Standardwerten versehen welche geltend sind sollte beim Funktionsaufruf das Argument fehlen. Im klassischen C gibt es mehrere Möglichkeiten so ein Verhalten nach zu implementieren, jedoch ist dies ohne zusätzlichen Quellcode meist nicht möglich.
+
+\subsubsection{Beispiel}          
+Das folgende Beispiel zeigt wie man die Initialisierungsfunktion einer Seriellen Schnittstelle mit Standardwerten versehen kann. Sofort erkennbar ist das die gleiche Implementierung in C wesentlich unübersichtlicher wirkt. In der main Funktion werden die verschieden Möglichkeiten dargestellt wie man die Funktion aufrufen könnte.
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={C++ Beispiel}}
+		\lstinputlisting{../Code_Samples/Standardparameter/C++/main.cpp}
+		\label{fig:3}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C,caption={C Beispiel}}
+		\lstinputlisting{../Code_Samples/Standardparameter/C/main.c}
+		\label{fig:4}
+	\end{subfigure}
+\end{figure}
+
+\subsubsection{Analyse}
+Der C++ Compiler ersetzt die nicht angegeben Parametern während der Übersetzungszeit durch die Default-Parameter womit die main Funktion bei beiden Varianten gleich viel ROM Speicher (176 byte) benötigt. Jedoch alloziert die uart\_init Funktion in der C Version mehr Speicher da hier zur Laufzeit die Standardparameter gegebenenfalls gesetzt werden müssen.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse C++}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -Os main.cpp
+		$ arm-none-eabi-nm a.out --print-size
+		...
+		00000000 00000010 t _ZL9uart_initiiii
+		00000000 000000b0 T main
+		00000000 00000004 B ret
+		...
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse C}, language=bash, numbers=none]
+		$ arm-none-eabi-gcc -c -Os main.c
+		$ arm-none-eabi-nm a.out --print-size
+		...
+		00000000 0000002c t uart_init
+		00000000 000000b0 T main
+		00000000 00000004 B ret
+		...
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+Bei Verwendung von C++ Standardparametern sollte man darauf achten dass man die Parameter, wo die Wahrscheinlichkeit einer Änderung am Höchsten ist ganz links in der Funktionsparameter liste packt. Bei der Seriellen Schnittelle wäre das die Baudrate da sich die restlichen Parameter nicht so häufig ändern.  
+
+\subsubsection{Fazit}
+Standardparameter sind sehr nützlich wenn es sich um Konfigurations- Funktionen handelt da man diese übersichtlicher gestalten kann. Auch Funktions- Aufrufe mit langen Parameter Listen kann man vermeiden wenn einem die Standard Werte genügen. 
 
 \newpage
+
 \subsection{Funktions- Templates}
-Oftmals muss man eine und dieselbe Funktion für verschiedene Datentypen implementieren. In C++ kann man dieses Problem mit Templates sehr elegant lösen. Templates stellen eine Art Schablone dar mit denen man Funktionen unabhängig von einem bestimmten Datentypen implementieren kann. Dies ist vor allem bei Manipulationen von Listen oder Arrays interessant da man den Algorithmus nicht für jeden Datentyp erneut implementieren muss. 
+Oftmals muss man eine und dieselbe Funktion für verschiedene Datentypen implementieren. In C++ kann man dieses Problem mit Templates sehr elegant lösen. Templates stellen eine Art Schablone dar mit denen man Funktionen unabhängig von einem bestimmten Datentypen implementieren kann. Dies ist vor allem bei Manipulationen von Listen oder Arrays interessant da man den Algorithmus nicht für jeden Datentyp erneut implementieren muss.
 
 \subsubsection{Beispiel}
 Das nachfolgende Beispiel zeigt wie man in C++ eine Funktion die 2 Werte addieren soll unabhängig von dessen Datentypen implementieren kann. Erkennbar ist auch dass die C++ Variante wesentlich kürzer und somit auch übersichtlicher als die Version in C wirkt.
@@ -260,13 +311,13 @@ Das nachfolgende Beispiel zeigt wie man in C++ eine Funktion die 2 Werte addiere
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C++ Beispiel}}
 		\lstinputlisting{../Code_Samples/Funkions_Templates/C++/main.cpp}
-		\label{fig:3}
+		\label{fig:5}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C,caption={C Beispiel}}
 		\lstinputlisting{../Code_Samples/Funkions_Templates/C/main.c}
-		\label{fig:4}
+		\label{fig:6}
 	\end{subfigure}
 \end{figure}
 \subsubsection{Analyse}
@@ -354,13 +405,13 @@ Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ we
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C- Array}}
 		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/C_Array/c_array.cpp}
-		\label{fig:5}
+		\label{fig:7}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={std::array}}
 		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/std_array/stdArray.cpp}
-		\label{fig:6}
+		\label{fig:8}
 	\end{subfigure}
 \end{figure}
 

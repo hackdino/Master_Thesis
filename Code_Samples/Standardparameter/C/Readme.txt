@@ -1,5 +1,5 @@
 Compile:
-arm-none-eabi-g++ -c -Os main.cpp
+arm-none-eabi-gcc -c -Os main.c
 
 Analyse:
 arm-none-eabi-nm main.o --print-size
