@@ -198,8 +198,6 @@ Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Com
 \subsection{Eingabe- und Ausgabestreams}
 
 \newpage
-\subsection{'auto'-Typ}
-\newpage
 \subsection{Funktionen Überladen}
 C++ bietet ein Mechanismus indem man mehrere Funktionen mit dem gleichen Namen deklarieren kann, diese sich jedoch in ihrer Signatur unterscheiden müssen. Somit kann man bestehende Funktionen überladen, indem man die Datentypen oder Anzahl der Parameter verändert. Der Compiler sucht sich dann die Funktion mit der passenden Signatur heraus. 
 \subsubsection{Beispiel} \label{beispiel:1}
@@ -453,8 +451,75 @@ Kompiliert man die C- Array und \textit{std::array} Variante jeweils mit der Opt
 \subsubsection{Fazit}
 Schlussfolgernd kann man Sagen dass \textit{std::array} ohne weiteres in embedded Projekten verwenden werden darf und eine Reihe von Vorteilen gegenüber dem C- Array bietet. Auch die Kompatibilität zu älterem Code der möglicherweise noch klassische Pointer benötigt sollte kein Problem darstellen da man mit der \textit{std::array} Methode \textbf{data} direkten Zugriff auf das darunterliegende Array bekommt. In der Standard C++ Bibliothek findet man auch noch einige andere Containerklassen wie \textit{std::list} oder \textit{std::deque} die sich zur Speicherung von Daten anbieten, jedoch auch wie \textit{std::vector} wesentlich komplexer sind und somit nur zum Einsatz kommen sollten wenn Speicherverbrauch und CPU Auslastung keine wesentliche Rolle spielen.
 \newpage
+
 \subsection{Zeichenketten}
+Bei textbasierten Schnittellen oder Dateioperationen kommt man um Zeichenketten nicht herum. In C++ kann man die Klasse \textit{std::string} aus der C++ Standardbibliothek verwenden oder man benutzt weiterhin klassische C Strings. Der größte Vorteil von \textit{std::string} ist dass dieser Datentyp seine exakte Größe kennt und somit unerlaubte Zugriffe außerhalb des zugewiesenen Speicher vermieden werden können. Dies ist ein bekanntes Problem bei C Strings in Kombination mit den Standard Funktionen die in der Bibliothek \textit{string.h} deklariert sind, da man hier extrem aufpassen muss dass man nicht über die Grenzen hinaus operiert und Zeichenketten stets richtig mit '\textbackslash 0' terminiert. \newline\newline
+Um die Funktionsweise von \textit{std::string} besser zu verstehen analysieren wir die Größe der Datentypen \textit{std::string} und \textit{char}. Das die Größe von \textit{char} 1 Byte ist sollte keine Überraschung sein, jedoch ist einem auf den ersten Blick unklar warum die Größe von \textit{std::string} 24 Byte ist.
+
+\begin{table}[!htb]
+	\centering
+	\begin{tabular}{| l | c | r |}
+		\hline
+		\textbf{Datentyp}  & \textbf{Größe mittels sizeof()} \\ \hline
+		std::string        & 24 \\ \hline
+		char       		   & 1  \\ \hline
+	\end{tabular}
+	
+	\caption{Größe von std::string und char}
+	\label{tbl:size_string_char}
+	% Verweis im Text mittels \ref{tbl:beispieltabelle}
+	
+\end{table}
+
+Analysiert man die \textit{std::string} Klasse findet man heraus dass diese eine Instanziierung von der Template Klasse \textit{std::basic\_string} mit dem Datentypen \textit{char} ist. Schaut man sich die Header-Datei dieser Klasse an kann man ein Datenschema wie im Quellcode 19 vereinfacht dargestellt erkennen. Nun weiß man auch warum sizeof(std::string) 24 ergibt. Die Daten setzen sich aus einem Pointer \textit{*data} (4 byte) der auf den Datenblock zeigt, einer Variable \textit{string\_lenght} (4 byte) welche die Länge des Strings beinhaltet und einer Union (16 byte) welche als Buffer dient oder als Variable die Anzahl des allozierten Speichers am Heap beinhaltet.\newline
+
+
+\begin{figure}[!htb]
+	\centering
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Datenschema std:string}, otherkeywords = {size_t}}
+		\lstinputlisting{../Code_Samples/Zeichenketten/stdString/datenSchema_std_string.cpp}
+		\label{lst:9}
+	\end{subfigure}
+\end{figure}
+
+Solange die Zeichenkette weniger als 17 Zeichen beinhaltet, werden Daten im lokalen Datenblock von 16 Byte abgelegt auf welchen auch der Zeiger \textit{*data} zeigt. Überschreitet die Zeichenkette die Länge von 16 Zeichen wird zur Laufzeit dynamisch Speicher am Heap reserviert wo dann der neue String auch hin kopiert wird. Jetzt zeigt der Zeiger \textit{*data} nicht mehr auf den lokalen Buffer sondern auf den am Heap allozierten Speicher.
+Die Variable \textit{allocated\_data} beinhaltet nun die Größe des allozierten Speichers am Heap. Um Speicher zu sparen wurde der Buffer \textit{local\_data[16]} und die Variable \textit{allocated\_data} in eine Union verpackt da immer nur eine zur gleichen Zeit verwendet wird. Die Größe des allozierten Speichers am Heap muss mindestens so groß sein wie die Länge der eigentlichen Zeichenkette (\textit{allocated\_data} >= \textit{string\_lenght}).\newline\newline
+Das nachfolgende Beispiel verdeutlicht wie dynamisch Speicher am Heap alloziert wird wenn man die Länge von \textit{std::string} dynamisch verändert. Dazu wird die Zeichenkette bei jedem Schleifendurchgang um das Zeichen '=' erweitert. Die Funktionen \textit{malloc} und \textit{free} wurden so manipuliert das diese jeweils ein Text ausgeben wenn Speicher am Heap alloziert oder de-alloziert wird.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Dynamisches Verhalten}}
+		\lstinputlisting{../Code_Samples/Zeichenketten/stdString/std_heap_mem.cpp}
+		\label{lst:10}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+	\begin{lstlisting}[gobble=6, title={Ausgabe Quellcode (20)}, language=bash, numbers=none]
+	   02: =                                                                           
+ 	  03: ==                                                                          
+	   :::                                                               
+	   15: ==============                                                              
+	   16: ===============                                                             
+	   * Allocate 31 bytes                                                             
+	   17: ================                                                            
+	   18: =================                                                           
+	   :::                                            
+	   30: =============================                                               
+	   31: ==============================                                              
+	   * Allocate 61 bytes                                                             
+	   * Deallocate                                                                    
+	   32: ===============================                                               
+	   33: ================================                                             	
+	\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+
+Wie bei den C Strings ist auch bei \textit{std::string} jede Zeichenkette mit '\textbackslash 0' terminiert. Fügt man das 17 Zeichen hinzu werden 31 Bytes am Heap alloziert da der interne Buffer mit 16 bytes jetzt zu klein ist. Wächst die Zeichenkette auf 32 Zeichen an werden weiter 61 Bytes alloziert wohin die neue Zeichenkette kopiert wird. Nach dem Kopier- Vorgang wird der alte Speicher von 31 Bytes wieder freigegeben. Erkennbar ist also dass der Speicher jeweils um das doppelte wächst sollte der momentane Speicher am Heap nicht mehr ausreichend sein.
+
+
 \subsection{Pointer vs Referenzen}
+
 \subsection{Namespaces}
 \subsection{Dynamische Speicher Verwaltung}
 \subsection{Klassen}

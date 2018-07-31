@@ -1,6 +1,6 @@
 // Compile
-arm-none-eabi-g++ -Os --specs=nosys.specs cChar.cpp
+arm-none-eabi-g++ -c -Os main.cpp
 
 //Analyse
-arm-none-eabi-size a.out
-arm-none-eabi-nm a.out --print-size
+arm-none-eabi-size main.o
+arm-none-eabi-nm main.o --print-size
