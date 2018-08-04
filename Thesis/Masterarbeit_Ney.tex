@@ -453,7 +453,7 @@ Schlussfolgernd kann man Sagen dass \textit{std::array} ohne weiteres in embedde
 \newpage
 
 \subsection{Zeichenketten}
-Bei textbasierten Schnittellen oder Dateioperationen kommt man um Zeichenketten nicht herum. In C++ kann man die Klasse \textit{std::string} aus der C++ Standardbibliothek verwenden oder man benutzt weiterhin klassische C Strings. Der größte Vorteil von \textit{std::string} ist dass dieser Datentyp seine exakte Größe kennt und somit unerlaubte Zugriffe außerhalb des zugewiesenen Speicher vermieden werden können. Dies ist ein bekanntes Problem bei C Strings in Kombination mit den Standard Funktionen die in der Bibliothek \textit{string.h} deklariert sind, da man hier extrem aufpassen muss dass man nicht über die Grenzen hinaus operiert und Zeichenketten stets richtig mit '\textbackslash 0' terminiert. \newline\newline
+Bei textbasierten Schnittellen oder Dateioperationen kommt man um Zeichenketten nicht herum. In C++ kann man die Klasse \textit{std::string} aus der C++ Standardbibliothek verwenden oder man benutzt weiterhin klassische C Strings. Der größte Vorteil von \textit{std::string} ist dass dieser Datentyp seine exakte Größe kennt und somit unerlaubte Zugriffe außerhalb des zugewiesenen Speicher vermieden werden können. Dies ist ein bekanntes Problem bei C Strings in Kombination mit Funktionen aus der Standardbibliothek \textit{string.h}, da man hier extrem aufpassen muss dass man nicht über die Grenzen hinaus operiert und Zeichenketten stets richtig mit '\textbackslash 0' terminiert. \newline\newline
 Um die Funktionsweise von \textit{std::string} besser zu verstehen analysieren wir die Größe der Datentypen \textit{std::string} und \textit{char}. Das die Größe von \textit{char} 1 Byte ist sollte keine Überraschung sein, jedoch ist einem auf den ersten Blick unklar warum die Größe von \textit{std::string} 24 Byte ist.
 
 \begin{table}[!htb]
@@ -515,9 +515,83 @@ Das nachfolgende Beispiel verdeutlicht wie dynamisch Speicher am Heap alloziert 
 	\end{subfigure}
 \end{figure}
 
-Wie bei den C Strings ist auch bei \textit{std::string} jede Zeichenkette mit '\textbackslash 0' terminiert. Fügt man das 17 Zeichen hinzu werden 31 Bytes am Heap alloziert da der interne Buffer mit 16 bytes jetzt zu klein ist. Wächst die Zeichenkette auf 32 Zeichen an werden weiter 61 Bytes alloziert wohin die neue Zeichenkette kopiert wird. Nach dem Kopier- Vorgang wird der alte Speicher von 31 Bytes wieder freigegeben. Erkennbar ist also dass der Speicher jeweils um das doppelte wächst sollte der momentane Speicher am Heap nicht mehr ausreichend sein.
+Wie bei den C Strings ist auch bei \textit{std::string} jede Zeichenkette mit '\textbackslash 0' terminiert. Fügt man das 17 Zeichen hinzu werden 31 Bytes am Heap alloziert da der interne Buffer mit 16 bytes jetzt zu klein ist. Wächst die Zeichenkette auf 32 Zeichen an werden weiter 61 Bytes alloziert wohin die neue Zeichenkette kopiert wird. Nach dem Kopier- Vorgang wird der alte Speicher von 31 Bytes wieder freigegeben. Erkennbar ist also dass der Speicher jeweils um das doppelte wächst sollte der momentane Speicher am Heap nicht mehr ausreichend sein. Die meisten modernen Compiler verfolgen eine ähnliche Strategie was das Verhalten von \textit{std::string} angeht, jedoch kann man Unterschiede in der Größe des lokalen Buffers oder dem Algorithmus wie Speicher am Heap alloziert wird erkennen. \newpage
 
+Die \textit{std::string} Klasse stellt eine Reihe vom Methoden zu Verfügung die das Arbeiten mit Strings sehr vereinfachen. Solche Methoden bieten eine ähnliche oder erweiterte Funktionalität wie die aus der Standard C Bibliothek \textit{string.h} und können in diversen Dokumentationen nachgeschlagen werden. Da in kleinen embedded Systemen die Speicherverwaltung eine wichtige Rolle spielt sollen die Methoden welche Auskünfte über Kapazität und Länge der Zeichenkette geben näher analysiert werden. Grundsätzlich muss man bei der \textit{std::string} Klasse zwischen 2 Größen unterscheiden: Der eigentlichen String Länge und des Speichers der momentan zu Verfügung steht. Tabelle \ref{tbl:string_method} unterteilt die Methoden in genau diese 2 Gruppen.
 
+\begin{table}[!htb]
+	\centering
+	\begin{tabular}{| l | c | r |}
+		\hline
+		\textbf{String Länge}  & \textbf{Kapazität} \\ \hline
+		size()        & capacity()				\\ \hline
+		lenght()      & reserve() 	    		\\ \hline
+		empty()       & shrink\_to\_fit() 		\\ \hline
+		resize()      &   						\\ \hline
+		clear()       &   					 	\\ \hline
+		max\_size()   & 						\\ \hline
+	
+	\end{tabular}
+	
+	\caption{Überblick Methoden über Kapazität und Länge}
+	\label{tbl:string_method}
+	% Verweis im Text mittels \ref{tbl:beispieltabelle}
+\end{table}
+Lediglich die Methoden \textit{capacity()}, \textit{reserve()} und \textit{shrink\_to\_fit()} beziehen sich auf die Speicherverwaltung des Strings, bei allen anderen Funktionen geht es um die reine Länge der Zeichenkette. Da bei \textit{std::string} Zeichen als ASCII-byte interpretiert werden liefern die Methoden \textit{size()} und \textit{lenght()} genau das gleiche Ergebnis. Das nachfolgende Beispiel soll Unterschiede noch einmal hervorheben. \newline\newline
+Analysiert man die Ausgabe vom Quellcode 22 hat der String eine Länge von 10 Zeichen und eine Kapazität von 15 Byte nach der Initialisierung. Ruft man die Methode \textit{reserve()} mit 500 auf, werden 500 Byte alloziert. Beim Aufruf der Methode \textit{rezize()} mit 5, wird lediglich die Zeichenkette auf eine Länge von 5 Zeichen reduziert. Die Methode \textit{clear()} löscht alle Zeichen ändert aber nichts am alloziertem Speicher. Das Ergebnis der Methode \textit{max\_size()} ist nicht sehr aussagekräftig da dies nur ein konstanter Wert ist und \textbf{keine} Informationen über den noch verfügbaren Speicher am Heap liefert. Die Methode \textit{shrink\_to\_fit()} die es ab C++11 gibt sollte den allozierten Speicher auf den kleinstmöglichen Wert begrenzen damit der eigentliche String noch hineinpasst. Dies funktioniert jedoch nur bedingt da die Methode nicht bindend ist und der Optimierungsgrad bei der Klasse selbst liegt.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.65\textwidth}
+		\lstset{language=C++,caption={Kapazität von std::string}}
+		\lstinputlisting{../Code_Samples/Zeichenketten/stdString/capacity.cpp}
+		\label{lst:11}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.35\textwidth}
+		\begin{lstlisting}[gobble=6, title={Ausgabe Quellcode (22)}, language=bash, numbers=none]
+	   String: Hallo Welt                                                              
+	   size() = 10                                                                     
+	   length() = 10                                                                   
+	   max_size() = 2147483647                                                         
+	   capacity() = 15                                                                 
+	                                                          
+	   String: Hallo Welt                                                              
+	   size() = 10                                                                     
+	   length() = 10                                                                   
+	   max_size() = 2147483647                                                         
+	   capacity() = 500                                                                
+	   
+	   String: Hallo                                                                   
+	   size() = 5                                                                      
+	   length() = 5                                                                    
+	   max_size() = 2147483647                                                         
+	   capacity() = 500                                                                
+	                                                                    
+	   String: Hallo                                                                   
+	   size() = 5                                                                      
+	   length() = 5                                                                    
+	   max_size() = 2147483647                                                         
+	   capacity() = 50                                                                 
+	   
+	   String:                                                                         
+	   size() = 0                                                                      
+	   length() = 0                                                                    
+	   max_size() = 2147483647                                                         
+	   capacity() = 50
+	   
+	   
+	   ..             
+                               
+                               
+                                          	
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+
+\newpage
+Da wir jetzt einen relativ guten Eindruck über den Unterschied der Speicherverwaltung am RAM (Daten, Heap) von \textit{std::string} gegenüber von C-Strings haben widmen wir uns jetzt dem ROM (Code) Speicherbedarf. Dieser wird ja hauptsächlich durch die Funktionen beeinflusst welche in der C und C++ Standardbibliothek definiert sind. Um den ROM Overhead von \textit{std::string} herauszufinden wird eine Programm was Strings manipuliert jeweils einmal mit der Hilfe von C- Strings und \textit{std::string} implementiert. 
+
+\newpage
 \subsection{Pointer vs Referenzen}
 
 \subsection{Namespaces}

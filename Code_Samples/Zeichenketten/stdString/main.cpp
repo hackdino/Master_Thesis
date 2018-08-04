@@ -1,11 +1,13 @@
 #include <string>
-std::string str1{80, '\0'};
+
+std::string str{"C++ ist eine ", 50};
 
 int main() {
   
-  str1.append("strings ");
-  str1.append("have been ");
-  str1.append("concatenated.");
+  str.append("schöne ");
+  str.append("Programmiersprache ");
+  int start_pos = str.find("schöne ");
+  str.replace(start_pos, 7, "cooole ");
   
   return 0;
 }
