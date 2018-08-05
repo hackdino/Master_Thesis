@@ -3,16 +3,15 @@
 
 int main() {
   
-  char *str = (char *)malloc(sizeof(char) * 50);
+  char *str = (char *)
+              malloc(sizeof(char)*50);
   
   strcpy((char *)str, "C++ ist eine ");
-  strcat((char *)str, "schöne ");
-  strcat((char *)str, "Programmiersprache.");
+  strcat((char *)str, "schoene ");
+  strcat((char *)str, "Sprache");
   
-  char *help = strstr (str, "schöne ");
-  strncpy (help, "cooole ", 7);
+  char *help = strstr(str, "schoene ");
+  strncpy (help, "coooole ", 8);
    
   return 0;
 }
-
-/*EOF*/

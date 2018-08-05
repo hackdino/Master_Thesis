@@ -580,7 +580,7 @@ Analysiert man die Ausgabe vom Quellcode 22 hat der String eine Länge von 10 Ze
 	   capacity() = 50
 	   
 	   
-	   ..             
+	   String_is_empty            
                                
                                
                                           	
@@ -590,6 +590,20 @@ Analysiert man die Ausgabe vom Quellcode 22 hat der String eine Länge von 10 Ze
 
 \newpage
 Da wir jetzt einen relativ guten Eindruck über den Unterschied der Speicherverwaltung am RAM (Daten, Heap) von \textit{std::string} gegenüber von C-Strings haben widmen wir uns jetzt dem ROM (Code) Speicherbedarf. Dieser wird ja hauptsächlich durch die Funktionen beeinflusst welche in der C und C++ Standardbibliothek definiert sind. Um den ROM Overhead von \textit{std::string} herauszufinden wird eine Programm was Strings manipuliert jeweils einmal mit der Hilfe von C- Strings und \textit{std::string} implementiert. 
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={C- String}}
+		\lstinputlisting{../Code_Samples/Zeichenketten/C_Char/main.cpp}
+		\label{fig:9}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={std::string}}
+		\lstinputlisting{../Code_Samples/Zeichenketten/stdString/main.cpp}
+		\label{fig:10}
+	\end{subfigure}
+\end{figure}
 
 \newpage
 \subsection{Pointer vs Referenzen}
