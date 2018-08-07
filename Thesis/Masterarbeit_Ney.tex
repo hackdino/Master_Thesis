@@ -414,7 +414,7 @@ Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ we
 \end{figure}
 
 \subsubsection{std::vector}
-Bei der \textit{sdt::vector} Containerklasse hat man die Möglichkeit die Größe des Arrays dynamisch anzupassen. Somit ist \textit{sdt::vector} wesentlich komplexer und mit Vorsicht zu genießen da Speicher zur Laufzeit am Stack oder Heap alloziert werden muss. Bei embedded Projekten sollte man auf die \textit{sdt::vector} Klasse verzichten und wenn eine dynamische Speicherverwaltung von Nöten ist bieten gängige RTOS oder OS Systeme bessere Mechanismen an, die im Fehlerfall (Heap/Stack Überläufe) wesentlich besser zu Debuggen sind.
+Bei der \textit{sdt::vector} Containerklasse hat man die Möglichkeit die Größe des Arrays dynamisch anzupassen. Somit ist \textit{sdt::vector} wesentlich komplexer und mit Vorsicht zu genießen da Speicher zur Laufzeit am Stack oder Heap alloziert werden muss. Dies ist auch dadurch zu erkennen dass sizeof(std::vector<int>) nicht wie bei \textit{std::array} oder dem C- Array die eigentliche Größe in Bytes zurückliefert sondern immer 12 welche lediglich zur Verwaltung von \textit{std::vector} benötigt werden und die eigentlichen Daten am Heap gespeichert werden. Bei embedded Projekten sollte man auf die \textit{sdt::vector} Klasse verzichten und wenn eine dynamische Speicherverwaltung von Nöten ist bieten gängige RTOS oder OS Systeme bessere Mechanismen an, die im Fehlerfall (Heap/Stack Überläufe) wesentlich besser zu Debuggen sind.
 
 \subsubsection{Analyse}
 Kompiliert man die C- Array und \textit{std::array} Variante jeweils mit der Optimierungsstufe \textbf{-0s} kann man keinen unterschied zwischen den beiden Implementierungen feststellen. Jedoch einsteht ein geringer Overheat bei Verwendung von \textit{std::array} in Kombination mit niedrigeren Optimierungsstufen die durch die höhere Abstraktion zum eigentlichen Speicher Segment zu erklären ist. Auch zu erkennen ist dass bei beiden Implementierungen jeweils Speicher für genau 10 \textbf{int} Werte statisch in der \textbf{bss} Sektion reserviert wird.
@@ -589,21 +589,53 @@ Analysiert man die Ausgabe vom Quellcode 22 hat der String eine Länge von 10 Ze
 \end{figure}
 
 \newpage
-Da wir jetzt einen relativ guten Eindruck über den Unterschied der Speicherverwaltung am RAM (Daten, Heap) von \textit{std::string} gegenüber von C-Strings haben widmen wir uns jetzt dem ROM (Code) Speicherbedarf. Dieser wird ja hauptsächlich durch die Funktionen beeinflusst welche in der C und C++ Standardbibliothek definiert sind. Um den ROM Overhead von \textit{std::string} herauszufinden wird eine Programm was Strings manipuliert jeweils einmal mit der Hilfe von C- Strings und \textit{std::string} implementiert. 
+Da wir jetzt einen relativ guten Eindruck über den Unterschied der Speicherverwaltung am RAM (Daten, Heap) von \textit{std::string} gegenüber von C-Strings haben widmen wir uns jetzt dem ROM (Code) Speicherbedarf. Dieser wird hauptsächlich durch die Funktionen beeinflusst welche in der C und C++ Standardbibliothek definiert sind. Um den ROM Overhead von \textit{std::string} herauszufinden wurde ein lauffähiges Programm was Strings manipuliert jeweils einmal mit Hilfe von C- Strings und \textit{std:.string} implementiert. Das nachfolgende Beispiel zeigt auch dass man bei \textit{std::string} Operatoren wie + und << sinnvoll verwenden kann um zum Beispiel Strings aneinanderzuhängen.
+\newpage
+
+ Um keine Fehler in der Analyse zu begehen wurde das nachfolgende Beispiel compiliert und gelinkt damit es auf einem reellen Mikrocontroller lauffähig ist. Zur Analyse wurden nun die Größen der verschiedenen Link Sektionen von allen gelinkten Objekten der C und C++ Standardbibliothek und von der main.o Datei aufgelistet.
 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
-		\lstset{language=C++,caption={C- String}}
-		\lstinputlisting{../Code_Samples/Zeichenketten/C_Char/main.cpp}
+		\lstset{language=C++,caption={std::string}}
+		\lstinputlisting{../Code_Samples/Zeichenketten/stdString/main.cpp}
 		\label{fig:9}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
-		\lstset{language=C++,caption={std::string}}
-		\lstinputlisting{../Code_Samples/Zeichenketten/stdString/main.cpp}
+		\lstset{language=C++,caption={C- String}}
+		\lstinputlisting{../Code_Samples/Zeichenketten/C_Char/main.cpp}
 		\label{fig:10}
 	\end{subfigure}
 \end{figure}
+
+Da wir hier ein komplett lauffähiges Projekt mit OS analysieren ist die Größe der einzelnen Sektionen nicht sehr aussagekräftig sondern die Differenz zwischen beiden Implementationen von größerer Bedeutung. Erkennbar ist dass die Link Größen von der C Bibliothek und der main.o relativ ähnlich ausschauen. Jedoch fügt die C++ Bibliothek mit rund 8,5 KByte einen relativ großen Overhead an ROM (Code) dazu. Dieser doch recht hoher Overhead ist dadurch zu erklären dass die C++ Bibliothek hier zum ersten mal ins Projekt eingebunden wurde und somit nicht alles auf \textit{std::string} zurückzuführen ist. Der Overhead ist daher zum größten Teil einmalig da die Initialisierungs- Routinen der C++ Bibliothek doch einen recht großen Anteil an dem Overhead haben dürften. Wie groß jetzt der Overhead von \textit{std::string} wirklich ist kann man nicht so generell sagen, da es extrem von den Compiler Einstellungen (Flags) und der verwendeten C++ Bibliothek abhängt. Bei Verwendung einer auf ROM optimierten C++ Bibliothek wie zum Beispiel der UlibC++, die speziell für embedded Projekte entwickelt wurde, kann man durchaus noch etwas Speicher sparen.
+
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={std::string}, language=bash, numbers=none]
+		Module 			.text		.data		.bss
+		[lib]\c.a		25452		2472		11
+		[lib]\c++.a		8558		20			204
+		main.o			372		0			132
+		
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={C- Strings}, language=bash, numbers=none]
+		Module 			.text		.data		.bss
+		[lib]\c.a		24319		2472		89
+		[lib]\c++.a		4			0			0
+		main.o			355		0			132
+		
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+\newpage
+\subsubsection{Fazit}
+Ob man nun \textit{std::string} in seinem Projekt verwenden soll, hängt eher von der generellen Frage ab ob man Funktionen aus der Standard C++ Bibliothek verwenden will. Kann man mit dem doch relativ hohen Overhead leben bietet \textit{std::string} doch einige Vorteile gegenüber klassischen C- Strings. Jedoch geht eher Gefahr mit der dynamischen Speicher Verwaltung von \textit{std::string} daheer, da diese doch relativ komplex sein kann und durchaus zu bösen Fehlern am Heap oder Stack führen kann.
+
 
 \newpage
 \subsection{Pointer vs Referenzen}
