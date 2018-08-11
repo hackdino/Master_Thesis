@@ -598,13 +598,13 @@ Da wir jetzt einen relativ guten Eindruck über den Unterschied der Speicherverw
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={std::string}}
 		\lstinputlisting{../Code_Samples/Zeichenketten/stdString/main.cpp}
-		\label{fig:9}
+		\label{fig:11}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C- String}}
 		\lstinputlisting{../Code_Samples/Zeichenketten/C_Char/main.cpp}
-		\label{fig:10}
+		\label{fig:12}
 	\end{subfigure}
 \end{figure}
 
@@ -638,8 +638,57 @@ Ob man nun \textit{std::string} in seinem Projekt verwenden soll, hängt eher vo
 
 
 \newpage
-\subsection{Pointer vs Referenzen}
+\subsection{Zeiger vs Referenzen}
+Wenn große Datenblöcke einer Funktion übergeben werden sollen, übergibt man meist nicht den kompletten Datenblock sondern eine Referenz oder einen Zeiger auf diesen. In C++ kann man dazu Referenzen benutzen welche meist eine bessere Alternative zu den Zeigern darstellen. Zeiger sind Variablen die auf eine Adresse im Speicher zeigen, welche Daten oder Programmcode beinhalten können. Mit Referenzen kann man dies auch, jedoch können diese während der gesamten Laufzeit immer nur auf ein Datenobjekt referenzieren und können daheer auch als eine Art Alias für ein anderes Objekt angesehen werden. Im gegensatz zu Referenzen können Zeiger ihren Wert verändern und somit während der Laufzeit auf beliebig viele Datenblöcke zeigen. Bei Zeigern besteht somit immer die Möglichkeit dass dieser nicht auf einen gültigen Speicherblock zeigt und sollte daheer immer auf dessen Gültigkeit überprüft werden. \newline \newline
+Wenn es ums manipulieren von Datenblöcken geht, sieht man sehr oft noch die Verwendung von Zeigern da man hier in einer Schleife alle Elemente eines Datenblock durch iterieren kann indem man den Zeiger bei jedem Durchlauf erhöht. Das nachfolgende Beispiel zeigt wie man die Verwendung von Zeigern vermeiden kann indem man seinen Code etwas moderner gestaltet. Das Beispiel- Programm soll die Daten von jeweils 100 Personen ausgeben.\newline
 
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Zeiger Beispiel}}
+		\lstinputlisting{../Code_Samples/Pointer_vs_reference/Pointer/main.cpp}
+		\label{fig:7}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Referenz Beispiel}}
+		\lstinputlisting{../Code_Samples/Pointer_vs_reference/Reference/main.cpp}
+		\label{fig:8}
+	\end{subfigure}
+\end{figure}
+
+Bei dem Zeiger- Beispiel wird zuerst ein neuer Datentyp \textit{Person} mittels \textit{typedef struct} angelegt welche die Daten einer Person beschreibt. In der main Funktion wird dann ein Array vom Type \textit{Person} mit der Größe 100 angelegt. Die Funktion welche die Informationen aller Personen ausgibt benötigt dann einen Zeiger auf das Array und die zusätzliche Information wie viele Elemente vom Type \textit{Person} ausgegeben werden sollen.\newline \newline
+Bei dem Beispiel mit Referenzen wird zuerst eine einfache Struktur \textit{data} mittels \textit{struct} angelegt und dann ein neuer Datentyp mithilfe der Containerklasse \textit{std::array} angelegt. Die Größe von 100 ist ein fixer Bestandteil dieses Datentyps womit man sich die der auszugeben Elemente als Funktionsparameter sparen kann. Zudem kann man mit der \textit{for-each} Schleife die es seit C++11 gibt eleganter und sicherer durch alle Elemente durch iterieren. 
+
+\subsubsection{Analyse}
+Die Analyse zeigt dass Referenzen keinesfalls einen Overhead an Speicher mit sich bringen. Das Beispiel mit Zeigern ist sogar um 9 Byte Größer was durch den zusätzlichen Parameter in der \textit{print\_info} Funktion zu erklären ist. Ersetzt man beim Zeiger Beispiel die Länge durch einen Konstanten Wert erzeugt der Compiler bei beiden Versionen genau das Gleiche Ergebnis.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse Zeiger Beispiel}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -Os main.cpp
+		$ arm-none-eabi-size main
+		...
+		text    data     bss
+		163        0       0
+		...
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse Referenze Beispiel}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -Os main.c
+		$ arm-none-eabi-size main.o
+		...
+		text    data     bss
+		155        0       0
+		...
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+
+\subsubsection{Fazit}
+Als Fazit kann man sagen dass man Referenzen gegenüber Zeigern wenn möglich bevorzugen soll und seinen Code so gestalten soll das die Verwendung von Zeigern überflüssig wird. Referenzen haben den Vorteil dass die Syntax mit dem Punkt Operator übersichtlicher wirkt, sicherer zu verwenden sind da eine Referenz immer auf ein gültiges Datenobjekt zeigt und Vorteile zeigen wenn es um kopier- Konstruktoren oder das Überladen von Operatoren geht.
+\newpage
 \subsection{Namespaces}
 \subsection{Dynamische Speicher Verwaltung}
 \subsection{Klassen}
