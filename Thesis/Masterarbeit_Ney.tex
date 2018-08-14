@@ -194,8 +194,6 @@ Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Com
 	
 \end{table}
 
-\subsection{C++ Konzepte}
-\subsection{Eingabe- und Ausgabestreams}
 
 \newpage
 \subsection{Funktionen Überladen}
@@ -646,13 +644,13 @@ Wenn es ums manipulieren von Datenblöcken geht, sieht man sehr oft noch die Ver
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={Zeiger Beispiel}}
 		\lstinputlisting{../Code_Samples/Pointer_vs_reference/Pointer/main.cpp}
-		\label{fig:7}
+		\label{fig:13}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={Referenz Beispiel}}
 		\lstinputlisting{../Code_Samples/Pointer_vs_reference/Reference/main.cpp}
-		\label{fig:8}
+		\label{fig:14}
 	\end{subfigure}
 \end{figure}
 
@@ -690,13 +688,50 @@ Die Analyse zeigt dass Referenzen keinesfalls einen Overhead an Speicher mit sic
 Als Fazit kann man sagen dass man Referenzen gegenüber Zeigern wenn möglich bevorzugen soll und seinen Code so gestalten soll das die Verwendung von Zeigern überflüssig wird. Referenzen haben den Vorteil dass die Syntax mit dem Punkt Operator übersichtlicher wirkt, eine Referenz immer auf ein gültiges Datenobjekt zeigt und somit sicherer ist und gewisse Vorteile zeigen wenn es um kopier- Konstruktoren oder das Überladen von Operatoren geht.
 \newpage
 \subsection{Namensräume}
-Namensräume (Namespaces) sind vor allem dann nützlich wenn es um die modulare Programmierung geht. Hiermit können Namens Konflikte im Vorhinein eliminiert werden. Jeder war schon einmal in der Situation dass der Compiler einen Fehler produziert hat weil eine Funktion oder Variable schon einmal in einer anderen Datei deklariert wurde. Dies tritt vor allem bei größeren Projekten oder bei der Verwendung von externen Bibliotheken auf. In C++ kann man einzelnen Module in Namensräume verpacken um somit eine bessere Trennung von verschieden Code teilen zu erlangen. Der Namensraum \textit{sdt} dürfte jedem ein Begriff sein.
+Namensräume (Namespaces) sind vor allem dann nützlich wenn es um die modulare Programmierung geht. Hiermit können Namens Konflikte im Vorhinein eliminiert werden. Jeder war schon einmal in der Situation dass der Compiler einen Fehler produziert hat weil eine Funktion oder Variable schon einmal in einer anderen Datei deklariert wurde. Dies tritt vor allem bei größeren Projekten oder bei der Verwendung von externen Bibliotheken auf. In C++ kann man einzelnen Module in Namensräume verpacken um somit eine bessere Trennung von verschieden Code Teilen zu erlangen. Der Namensraum \textit{sdt} in dem sich die Standard C++ Module befinden dürfte jedem ein Begriff sein. Das nachfolgende Beispiel zeigt wie man Namensräume richtig verwenden kann um eine sinnvolle Modularisierung zu erreichen. \newline
 
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={serial.cpp}}
+		\lstinputlisting{../Code_Samples/Namespaces/Example/serial.cpp}
+		\label{fig:15}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={serial.h}}
+		\lstinputlisting{../Code_Samples/Namespaces/Example/serial.h}
+		\label{fig:16}
+	\end{subfigure}
+\end{figure}
 \newpage
-\subsection{Dynamische Speicher Verwaltung}
+Das Beispiel soll demonstrieren wie man einen Treiber für eine Serielle Schnittelle mithilfe von Namensräumen implementieren könnte. Zuerst haben wir den Namensraum \textit{driver} deklariert der alle Hardware Treiber eines Mikrocontrollers beinhalten soll. In der Datei \textit{serial.h} befinden sich die Funktionsprototypen welche als Schnittelle für dieses Modul dienen. Diese müssen natürlich in den Namensraum \textit{driver} verpackt werden. In der Datei \textit{serial.cpp} werden nun die Funktionen \textit{serial\_init} und \textit{serial\_send} im Namensraum \textit{driver} implementiert.\newline \newline Erkennbar ist dass sich in der Datei \textit{serial.cpp} noch eine anonymer Namensraum befindet. Anonyme Namensräume sind an dem fehlenden Namen erkennbar und dienen dazu Variablen, Funktionen oder Typen zu deklarieren welche nur innerhalb dieses Moduls (.cpp Datei) sichtbar sein sollen. Die Funktion send\_byte() und die Variable \textit{is\_init} vom Type \textit{state} sind somit nur in der Datei \textit{serial.cpp} gültig. Dieses Verhalten kann man natürlich auch mit dem Schlüsselwort \textit{static} erzeugen, jedoch mit dem Nachteil dass Typdeklarationen nicht nach außen verborgen werden. Der neue Type \textit{state} der den Status des Moduls beschreibt macht natürlich nur Sinn in dieser .cpp Datei und sollte daheer nicht nach außen sichtbar sein. Das Nachfolgende Beispiel zeigt 2 Methoden wie man das zuvor erstellte Modul verwenden kann.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={using keyworld}}
+		\lstinputlisting{../Code_Samples/Namespaces/Example/main_1.cpp}
+		\label{fig:17}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={:: Scope Operator}}
+		\lstinputlisting{../Code_Samples/Namespaces/Example/main_2.cpp}
+		\label{fig:18}
+	\end{subfigure}
+\end{figure}
+Mit dem Schlüsselwort \textit{using} kann man dem Compiler mitteilen dass man nun die Funktionen welche sich im Namensraum \textit{driver} befinden verwenden möchte. Möchte man jedoch nicht den ganzen Namensraum einbinden kann man mit dem Scope Operator :: auf Funktionen oder Variablen aus dem jeweiligen Namensraum zugreifen.
+
+
+\subsubsection{Fazit}
+Namensräume sind ideal wenn es um die Modularisierung von Projekten geht und bieten sich perfekt an um Betriebssystem Funktionalitäten vom User Space zu trennen. Auch anonyme Namensräume sollten verwendet werden um Funktionalität nach außen hin zu verbergen. Ein Speicher Overhead kann auch nicht einstehen da Namensräume lediglich dazu dienen dem Compiler mitzuteilen welche Funktionen er zu verwenden hat.
+\newpage
+
 \subsection{Klassen}
-\subsubsection{Konstruktoren}
-\subsubsection{Destruktoren}
+
+\subsection{Operatoren Überladen}
+\subsection{Dynamische Speicher Objekte}
+\subsection{Fehlerbehandlung}
+\subsection{Eingabe- und Ausgabestreams}
 
 
 
