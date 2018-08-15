@@ -727,7 +727,45 @@ Namensräume sind ideal wenn es um die Modularisierung von Projekten geht und bi
 \newpage
 
 \subsection{Klassen}
+In diesem Kapitel werden die Klassen analysiert welche die Grundlage für das OOP Konzept in C++ darstellen. Dazu wird eine Beispiel Klasse implementiert die eine Serielle Schnittelle eines Mikrocontrollers beschreiben soll. Diese Klasse wird dann fortlaufend während des Kapitels erweitert und adaptiert um zu analysieren wie sich Klassen und dessen Konzepte in Bezug auf Performance und Speicher verhalten. Des weiteren werden in diesem Kapitel einige Richtlinien aufgestellt wie man Klassen sinnvoll in embedded Projekten einsetzen kann. 
+\subsubsection{Erstes Beispiel}
+Die erste Definition unserer Klasse \textit{Serial} beinhaltet 2 private Variablen \textit{(baudrate, mode)} und 2 öffentliche Methoden \textit{(set\_baudrate, set\_mode)}. Wie im Beispiel ersichtlich sollte man Membervariablen wenn Möglich immer im \textit{private} Block definieren und den Zugriff nur über Methoden (Getters / Setters) erlauben. Dies hat den Vorteil dass man die Variablen nur über die öffentlichen Schnittellen \textit{(set\_baudrate, set\_mode)} verändern kann und somit auch den Wertebereich überprüfen kann. Das direkte verbergen von Daten führt zu einer Datenkapselung womit man die Klasse als einzelnes Modul besser testen kann und man die Gewissheit hat dass die Variablen sich im gewünschtem Wertebereich befinden. Die Klassendefinition und die Implementierung der Klasse sollte man auch immer in separate Dateien verpacken was zu einer besseren Übersichtlichkeit führt. \newline 
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassen Implementierung}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel/serial.cpp}
+		\label{fig:19}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassendefinition}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel/serial.h}
+		\label{fig:20}
+	\end{subfigure}
+\end{figure}
 
+Analysiert man mit \textit{sizeof(Serial)} die Größe unserer Klasse erhält man das Ergebnis 8 Byte. Diese 8 Byte setzen sich aus den 2 \textit{int} Werten zusammen welche jeweils 4 Byte allozieren. Somit benötigt eine Klasse keinen zusätzlichen Speicher neben den eigentlichen Klassen Variablen.
+% Beispiel (Wird verwendet für das ganze Kapitel)
+% Class vs Struct
+% Klassen Definition
+% Public vs Private
+% Datenkapselung (Getter & setter)
+% Initialisierung von objeckten
+
+% Klassenelemente
+	% static & const
+	% Rohe Zeiger als Klassenelemente
+	% Virtuelle methoden
+
+\subsubsection{Konstruktoren}
+
+% C+11 Initilisierung von Variablen
+\subsubsection{Destruktoren}
+\subsubsection{Methoden}
+
+% Inline Methoden
+
+% Const Methoden
 \subsection{Operatoren Überladen}
 \subsection{Dynamische Speicher Objekte}
 \subsection{Fehlerbehandlung}
