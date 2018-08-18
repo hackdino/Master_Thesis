@@ -197,7 +197,7 @@ Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Com
 
 \newpage
 \subsection{Funktionen Überladen}
-C++ bietet ein Mechanismus indem man mehrere Funktionen mit dem gleichen Namen deklarieren kann, diese sich jedoch in ihrer Signatur unterscheiden müssen. Somit kann man bestehende Funktionen überladen, indem man die Datentypen oder Anzahl der Parameter verändert. Der Compiler sucht sich dann die Funktion mit der passenden Signatur heraus. 
+In C++ ist es erlaubt mehrere Funktionen mit dem gleichen Namen zu deklarieren, diese sich jedoch in ihrer Signatur unterscheiden müssen. Somit kann man bestehende Funktionen überladen, indem man die Datentypen oder Anzahl der Parameter verändert. Der Compiler sucht sich dann die Funktion mit der passenden Signatur heraus. 
 \subsubsection{Beispiel} \label{beispiel:1}
 Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textit{int} und \textit{double} Werte addieren kann. Im klassischen C müsste man 2 Funktionen deklarieren die sich jeweils in ihrem Namen unterscheiden, wohingegen man in C++ den gleichen Funktionsnamen erneut verwenden darf.
 \begin{figure}[!htb]
@@ -215,7 +215,7 @@ Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textit{int} und \
 \end{figure}
 
 \subsubsection{Analyse}
-Beide Compiler generieren jeweils eine Funktion für \textit{int} (48 byte) und eine für \textit{double} (76 byte). Beim C++ Compiler kann man erkennen das dieser automatisch 2 verschiedene Funktionen mit dem Index 'ii' und 'dd' erstellt. Somit kann man sagen das Funktions- Überladungen keinen Speicher Overhead erzeugen. Zusätzlich kann man lange Funktionsnamen vermeiden und die Wahrscheinlichkeit das man irrtümlicherweise die falsche Funktion verwendet sinkt erheblich.
+Beide Compiler generieren jeweils eine Funktion für \textit{int} (48 byte) und eine für \textit{double} (76 byte). Beim C++ Compiler kann man erkennen das dieser automatisch 2 verschiedene Funktionen mit dem Index 'ii' und 'dd' erstellt. Somit kann man sagen das Funktionsüberladungen keinen Speicher Overhead erzeugen. Zusätzlich kann man lange Funktionsnamen vermeiden und die Wahrscheinlichkeit das man irrtümlicherweise die falsche Funktion verwendet sinkt erheblich.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\begin{lstlisting}[gobble=6, title={Analyse C++}, language=bash, numbers=none]
@@ -241,11 +241,11 @@ Beide Compiler generieren jeweils eine Funktion für \textit{int} (48 byte) und 
 \end{figure}
 
 \subsubsection{Fazit}
-Funktions- Überladungen erzeugen keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Standardparametern} (Default Arguments) wie es sie in C++ gibt schöneren Code erzeugen.
+Funktionsüberladungen erzeugen keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Standardparametern} (Default Arguments) wie es sie in C++ gibt schöneren Code erzeugen.
 
 \newpage
 \subsection{Standardparameter}
-Bei der Initialisierung von Hardware Modulen sind oft Standardparameter sinnvoll. Bei einer Seriellen Schnittelle ist die Konfiguration \textit{9600 8N1} für viele Anwendungen schon ausreichend. In C++ kann man Funktionsparameter mit festen Standardwerten versehen welche geltend sind sollte beim Funktionsaufruf das Argument fehlen. Im klassischen C gibt es mehrere Möglichkeiten so ein Verhalten nach zu implementieren, jedoch ist dies ohne zusätzlichen Quellcode meist nicht möglich.
+Bei der Initialisierung von Hardware Modulen sind oft Standardparameter sinnvoll. Bei einer Seriellen Schnittelle ist die Konfiguration \textit{9600 8N1} für viele Anwendungen schon ausreichend. In C++ kann man Funktionsparameter mit festen Standardwerten versehen welche geltend sind sollte beim Funktionsaufruf das jeweilige Argument fehlen. Im klassischen C gibt es mehrere Möglichkeiten so ein Verhalten nach zu implementieren, jedoch ist dies ohne zusätzlichen Quellcode meist nicht möglich.
 
 \subsubsection{Beispiel}          
 Das folgende Beispiel zeigt wie man die Initialisierungsfunktion einer Seriellen Schnittstelle mit Standardwerten versehen kann. Sofort erkennbar ist das die gleiche Implementierung in C wesentlich unübersichtlicher wirkt. In der main Funktion werden die verschieden Möglichkeiten dargestellt wie man die Funktion aufrufen könnte.
@@ -744,12 +744,49 @@ Die erste Definition unserer Klasse \textit{Serial} beinhaltet 2 private Variabl
 	\end{subfigure}
 \end{figure}
 
-Analysiert man mit \textit{sizeof(Serial)} die Größe unserer Klasse erhält man das Ergebnis 8 Byte. Diese 8 Byte setzen sich aus den 2 \textit{int} Werten zusammen welche jeweils 4 Byte allozieren. Somit benötigt eine Klasse keinen zusätzlichen Speicher neben den eigentlichen Klassen Variablen.
-% Beispiel (Wird verwendet für das ganze Kapitel)
-% Class vs Struct
-% Klassen Definition
-% Public vs Private
-% Datenkapselung (Getter & setter)
+Analysiert man mit \textit{sizeof(Serial)} die Größe unserer Klasse erhält man das Ergebnis 8 Byte. Diese 8 Byte setzen sich aus den 2 \textit{int} Werten zusammen welche jeweils 4 Byte allozieren. Somit benötigt eine Klasse keinen zusätzlichen Speicher neben den eigentlichen Klassen Variablen solange man auf Virtuelle Methoden und Vererbung verzichten kann. Für diesen Fall benötigt eine C++ Klasse nicht mehr Speicher als eine äquivalente C Struktur. Lediglich eine lehre Klasse alloziert 1 Byte im RAM Speicher.\newpage Das nachfolgende Beispiel zeigt den Zusammenhang zwischen C Strukturen und Klassen da diese oft miteinander verglichen werden. Bis auf den großen Unterschied das man bei Klassen mit den Schlüsselwörtern \textit{private, public} und \textit{protected} die Zugriffskontrolle einer Klasse steuern kann ähneln sich beide sehr.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klasse C++}}
+		\lstinputlisting{../Code_Samples/Klassen/Struct_vs_Class/Class.cpp}
+		\label{fig:21}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={C Structur}}
+		\lstinputlisting{../Code_Samples/Klassen/Struct_vs_Class/Struct.c}
+		\label{fig:22}
+	\end{subfigure}
+\end{figure}
+
+Wie im Beispiel ersichtlich kann man mit C Strukturen sogar eine Art Vererbung nach implementieren indem man einfach mehrere Strukturen ineinander verschachtelt.
+% Beispiel (Wird verwendet für das ganze Kapitel) ok
+% Class vs Struct ok
+% Klassen Definition ok
+% Public vs Private ok
+% Datenkapselung (Getter & setter) ok
+
+\subsubsection{RAII-Idom}
+Bevor wir mit den Konstruktoren und Destruktoren fortfahren soll hier kurz das RAII-Idom erläutert werden welches eine wichtige Programmiertechnik in C++ darstellt. RAII steht für "Resource acquisition is initialization" \space  was dafür sorgen soll dass bei der Ressourcenbelegung für ein Objekt die Initialisierung für dieses gleich mit erfolgt. Das nachfolgende Beispiel zeigt wie eine Array RAII oder nicht RAII Konform angelegen werden kann. Bei der \textit{Vector} Containerklasse wird automatisch der Konstruktor beim anlegen des Objektes aufgerufen und der Destruktor wenn der Funktionsblock verlassen wird. Bei dem nicht RAII Konformen Beispile wo Speicher mit \textit{new} alloziert wurde muss man das Array selber noch mit Initialisierungs- Daten befüllen und nach der Verwendung auch wieder dafür sorgen dass der allozierte Speicher mit \textit{delete} frei gegeben wird.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={RAII Konform}}
+		\lstinputlisting{../Code_Samples/Klassen/RAII/RAII_Conform.cpp}
+		\label{fig:23}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Nicht RAII Konform}}
+		\lstinputlisting{../Code_Samples/Klassen/RAII/RAII_Violation.cpp}
+		\label{fig:24}
+	\end{subfigure}
+\end{figure}
+\newpage
+
+Dieses Konzept ist eines der größten Vorteile von C++ da hier der Compiler automatisch dafür sorgt dass beim anlegen eines neuen Objektes am Stack oder Heap der Konstruktor aufgerufen wird. Auch der Destruktur wird automatisch ausgeführt sollte der Block indem das Objekt angelegt wurde verlassen werden. Das automatische aufrufen von Konstruktor und Destruktor kann das Laufzeitverhalten des Programms natürlich extrem beeinflussen und kann für unerfahrene C++ Programmierer eine Fehlerquelle darstellen da es nicht immer ersichtlich ist wann diese aufgerufen werden. Das erzeugen temporärer Objekte in Schleifen ist ein häufiger Grund warum C++ Programme langsam werden. 
+
 % Initialisierung von objeckten
 
 % Klassenelemente
@@ -758,6 +795,21 @@ Analysiert man mit \textit{sizeof(Serial)} die Größe unserer Klasse erhält ma
 	% Virtuelle methoden
 
 \subsubsection{Konstruktoren}
+Um die Konstruktoren näher zu analysieren erweitern wir unsere \textit{Serial} Klasse um 2 Konstruktor Methoden. Der Standard Konstruktor welcher geltend ist wenn bei der Definition des Objektes keine Initialisierungswerte angegeben wurden. Diesen sollte man immer implementieren um das Objekt mit Standard Werten zu initialisieren außer man will explizit erreichen dass man das Objekt nur mit einem benutzerdefinierten Konstruktor erstellen kann. Mit dem 2 Konstruktor kann man das Objekt mit benutzerdefinierten Werten für \textit{baudreate} und \textit{mode} anlegen. Bei den Konstruktoren gelten die gleiche Regeln wie bei den Funktionsüberladungen womit man theoretisch eine unbegrenzte Zahl an Konstruktoren definieren kann. Zudem können auch Standardwerte in Konstruktoren verwendet werden. 
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassen Implementierung}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V2/serial.cpp}
+		\label{fig:25}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassendefinition}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V2/serial.h}
+		\label{fig:26}
+	\end{subfigure}
+\end{figure}
 
 % C+11 Initilisierung von Variablen
 \subsubsection{Destruktoren}
