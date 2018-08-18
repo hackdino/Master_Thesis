@@ -171,7 +171,7 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 
 
 \chapter{Embedded C++}
-\subsection{Überblick}
+\section{Überblick}
 In diesem Kapitel werden verschiedene Konzepte von C++ näher analysiert um klare Aussagen über Speicherverbrauch und Performance liefern zu können. Es soll zugleich als eine Art Guideline für Embedded Programmierer dienen um C++ effizient einsetzen zu können. \newline 
 
 Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Compiler, Linker und Co. auch noch viele nützliche Tools zur Analyse mitliefert. Verschieden Tools die in den nachfolgenden Kapiteln zum Einsatz kommen werden in Tabelle \ref{tbl:analystools} aufgelistet.
@@ -196,10 +196,10 @@ Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Com
 
 
 \newpage
-\subsection{Funktionen Überladen}
+\section{Funktionen Überladen}
 In C++ ist es erlaubt mehrere Funktionen mit dem gleichen Namen zu deklarieren, diese sich jedoch in ihrer Signatur unterscheiden müssen. Somit kann man bestehende Funktionen überladen, indem man die Datentypen oder Anzahl der Parameter verändert. Der Compiler sucht sich dann die Funktion mit der passenden Signatur heraus. 
-\subsubsection{Beispiel} \label{beispiel:1}
-Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textit{int} und \textit{double} Werte addieren kann. Im klassischen C müsste man 2 Funktionen deklarieren die sich jeweils in ihrem Namen unterscheiden, wohingegen man in C++ den gleichen Funktionsnamen erneut verwenden darf.
+\subsection{Beispiel} \label{beispiel:1}
+Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textit{int} und \textit{double} Werte addieren kann. Im klassischen C müsste man jeweils 2 Funktionen deklarieren die sich in ihrem Namen unterscheiden, wohingegen man in C++ den gleichen Funktionsnamen erneut verwenden darf.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\lstset{language=C++,caption={C++ Beispiel}}
@@ -214,8 +214,8 @@ Im folgendem Beispiel braucht man eine Funktion die jeweils 2 \textit{int} und \
 	\end{subfigure}
 \end{figure}
 
-\subsubsection{Analyse}
-Beide Compiler generieren jeweils eine Funktion für \textit{int} (48 byte) und eine für \textit{double} (76 byte). Beim C++ Compiler kann man erkennen das dieser automatisch 2 verschiedene Funktionen mit dem Index 'ii' und 'dd' erstellt. Somit kann man sagen das Funktionsüberladungen keinen Speicher Overhead erzeugen. Zusätzlich kann man lange Funktionsnamen vermeiden und die Wahrscheinlichkeit das man irrtümlicherweise die falsche Funktion verwendet sinkt erheblich.
+\subsection{Analyse}
+Beide Compiler generieren jeweils eine Funktion für \textit{int} (48 byte) und eine für \textit{double} (76 byte). Beim C++ Compiler kann man erkennen das dieser automatisch 2 verschiedene Funktionen mit dem Index 'ii' und 'dd' erstellt. Somit erzeugen Funktionsüberladungen keinen zusätzlichen Speicher Overhead. Auch lange Funktionsnamen können vermieden werden und die Wahrscheinlichkeit das man irrtümlicherweise die falsche Funktion verwendet sinkt erheblich.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\begin{lstlisting}[gobble=6, title={Analyse C++}, language=bash, numbers=none]
@@ -240,14 +240,14 @@ Beide Compiler generieren jeweils eine Funktion für \textit{int} (48 byte) und 
 	\end{subfigure}
 \end{figure}
 
-\subsubsection{Fazit}
-Funktionsüberladungen erzeugen keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktions- Block erheblich in verschiedenen Implementationen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktions- Templates} eher zu empfehlen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Standardparametern} (Default Arguments) wie es sie in C++ gibt schöneren Code erzeugen.
+\subsection{Fazit}
+Funktionsüberladungen erzeugen keinen Speicher Overhead und sind zu empfehlen wenn sich der Funktionsblock erheblich in verschiedenen Implementierungen unterscheidet. Ändern sich nur die Datentypen wie es in diesem Beispiel der Fall ist sind \textit{Funktionstemplates} zu bevorzugen. Ändert sich nur die Anzahl der Parameter kann man oftmals mit \textit{Standardparametern} (Default Arguments) wie es sie in C++ gibt eleganteren Code erzeugen.
 
 \newpage
-\subsection{Standardparameter}
+\section{Standardparameter}
 Bei der Initialisierung von Hardware Modulen sind oft Standardparameter sinnvoll. Bei einer Seriellen Schnittelle ist die Konfiguration \textit{9600 8N1} für viele Anwendungen schon ausreichend. In C++ kann man Funktionsparameter mit festen Standardwerten versehen welche geltend sind sollte beim Funktionsaufruf das jeweilige Argument fehlen. Im klassischen C gibt es mehrere Möglichkeiten so ein Verhalten nach zu implementieren, jedoch ist dies ohne zusätzlichen Quellcode meist nicht möglich.
 
-\subsubsection{Beispiel}          
+\subsection{Beispiel}          
 Das folgende Beispiel zeigt wie man die Initialisierungsfunktion einer Seriellen Schnittstelle mit Standardwerten versehen kann. Sofort erkennbar ist das die gleiche Implementierung in C wesentlich unübersichtlicher wirkt. In der main Funktion werden die verschieden Möglichkeiten dargestellt wie man die Funktion aufrufen könnte.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -263,17 +263,17 @@ Das folgende Beispiel zeigt wie man die Initialisierungsfunktion einer Seriellen
 	\end{subfigure}
 \end{figure}
 
-\subsubsection{Analyse}
-Der C++ Compiler ersetzt die nicht angegeben Parametern während der Übersetzungszeit durch die Default-Parameter womit die main Funktion bei beiden Varianten gleich viel ROM Speicher (176 byte) benötigt. Jedoch alloziert die uart\_init Funktion in der C Version mehr Speicher da hier zur Laufzeit die Standardparameter gegebenenfalls gesetzt werden müssen.
+\subsection{Analyse}
+Bei dieser Analyse ist die Größe der \textit{main} Funktion im ROM wichtig, da in dieser die \textit{uart\_init} Funktion aufgerufen wird. Der C und C++ Compiler allozieren jeweils 240 Byte für die \textit{main} Funktion in der \textit{.text} Sektion. Analysiert man den generierten Assembler Code der \textit{main} Funktion von beiden Compilern kann man keinen Unterschied feststellen. Somit ergänzt der C++ Compiler lediglich die nicht gegeben Argumente mit den Standard Parametern während des Kompilierens. Die \textit{uart\_init} Funktion alloziert in der C Version mehr Speicher da hier gegebenenfalls die Standardparameter noch gesetzt werden müssen.
 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
 		\begin{lstlisting}[gobble=6, title={Analyse C++}, language=bash, numbers=none]
-		$ arm-none-eabi-g++ -c -Os main.cpp
+		$ arm-none-eabi-g++ -c -O0 main.cpp
 		$ arm-none-eabi-nm a.out --print-size
 		...
-		00000000 00000010 t _ZL9uart_initiiii
-		00000000 000000b0 T main
+		00000000 00000048 t _ZL9uart_initiiii
+		00000000 000000f0 T main
 		00000000 00000004 B ret
 		...
 		\end{lstlisting}
@@ -281,27 +281,27 @@ Der C++ Compiler ersetzt die nicht angegeben Parametern während der Übersetzun
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
 		\begin{lstlisting}[gobble=6, title={Analyse C}, language=bash, numbers=none]
-		$ arm-none-eabi-gcc -c -Os main.c
+		$ arm-none-eabi-gcc -c -O0 main.c
 		$ arm-none-eabi-nm a.out --print-size
 		...
-		00000000 0000002c t uart_init
-		00000000 000000b0 T main
+		00000000 00000098 t uart_init
+		00000000 000000f0 T main
 		00000000 00000004 B ret
 		...
 		\end{lstlisting}
 	\end{subfigure}
 \end{figure}
-Bei Verwendung von C++ Standardparametern sollte man darauf achten dass man die Parameter, wo die Wahrscheinlichkeit einer Änderung am Höchsten ist ganz links in der Funktionsparameter liste packt. Bei der Seriellen Schnittelle wäre das die Baudrate da sich die restlichen Parameter nicht so häufig ändern.  
+Bei Verwendung von C++ Standardparametern sollte man darauf achten dass man die Parameter, wo die Wahrscheinlichkeit einer Änderung am Höchsten ist möglichst links in die Funktionsparameter-Liste packt. Bei der Seriellen Schnittelle wäre das die Baudrate da sich die restlichen Parameter nicht so häufig ändern.  
 
-\subsubsection{Fazit}
-Standardparameter sind sehr nützlich wenn es sich um Konfigurations- Funktionen handelt da man diese übersichtlicher gestalten kann. Auch Funktions- Aufrufe mit langen Parameter Listen kann man vermeiden wenn einem die Standard Werte genügen. 
+\subsection{Fazit}
+Standardparameter sind sehr nützlich wenn es sich um Konfigurations-Funktionen handelt da man diese übersichtlicher gestalten kann. Auch Funktions- Aufrufe mit langen Parameter Listen kann man vermeiden wenn einem die Standard Werte genügen. Einen Speicher Overhead oder Änderungen in der Laufzeit des Programms sind nicht zu befürchten.
 
 \newpage
 
-\subsection{Funktions- Templates}
-Oftmals muss man eine und dieselbe Funktion für verschiedene Datentypen implementieren. In C++ kann man dieses Problem mit Templates sehr elegant lösen. Templates stellen eine Art Schablone dar mit denen man Funktionen unabhängig von einem bestimmten Datentypen implementieren kann. Dies ist vor allem bei Manipulationen von Listen oder Arrays interessant da man den Algorithmus nicht für jeden Datentyp erneut implementieren muss.
+\section{Funktions- Templates}
+Oftmals muss man eine und dieselbe Funktion für verschiedene Datentypen implementieren. In C++ kann man dieses Problem mit Templates sehr elegant lösen. Templates stellen eine Art Schablone dar mit denen man Funktionen unabhängig von einem bestimmten Datentypen implementieren kann. Dies ist vor allem bei Manipulationen von Listen oder Arrays interessant da man den Algorithmus nicht für jeden Datentypen erneut implementieren muss.
 
-\subsubsection{Beispiel}
+\subsection{Beispiel}
 Das nachfolgende Beispiel zeigt wie man in C++ eine Funktion die 2 Werte addieren soll unabhängig von dessen Datentypen implementieren kann. Erkennbar ist auch dass die C++ Variante wesentlich kürzer und somit auch übersichtlicher als die Version in C wirkt.
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -316,9 +316,9 @@ Das nachfolgende Beispiel zeigt wie man in C++ eine Funktion die 2 Werte addiere
 		\label{fig:6}
 	\end{subfigure}
 \end{figure}
-\subsubsection{Analyse}
+\subsection{Analyse}
 
-Beide Versionen wurden mit der Compiler Optimierung \textbf{-O0} kompiliert. Analysiert man beide Objekt Dateien findet man jeweils 2 Versionen von der Addier- Funktion. Bei der C Variante heißen die Funktionen genau gleich wie im Quellcode deklariert, wohingegen eine automatische Indexierung bei der C++ Variante erfolgt. In beiden Versionen werden jeweils 64 byte für die \textit{uint8\_t} und 72 byte für die \textit{int16\_t} Funktion alloziert. Es kann durchaus sein dass bei anderen Optimierungsstufen die Funktionen als inline kompiliert werden, jedoch entsteht auch dann nie ein Unterschied zwischen der C und C++ Version.
+Beide Versionen wurden mit der Compiler Optimierung \textit{-O0} kompiliert. Analysiert man beide Objekt Dateien findet man jeweils 2 Versionen von der Addier-Funktion. Bei der C Variante heißen die Funktionen genau gleich wie im Quellcode deklariert, wohingegen eine automatische Indexierung bei der C++ Variante erfolgt. In beiden Versionen werden jeweils 48 Byte für die \textit{int} und 76 Byte für die \textit{double} Funktion alloziert. Es kann durchaus sein dass bei anderen Optimierungsstufen die Funktionen als \textit{inline} kompiliert werden, jedoch entsteht auch dann nie ein Unterschied zwischen der C und C++ Version.
 
 
 \begin{figure}[!htb]
@@ -327,8 +327,8 @@ Beide Versionen wurden mit der Compiler Optimierung \textbf{-O0} kompiliert. Ana
 		$ arm-none-eabi-g++ -c -O0 main.cpp
 		$ arm-none-eabi-nm a.out --print-size
 		...
-		00000000 00000040 W _Z3addIhET_S0_S0_
-		00000000 00000048 W _Z3addIsET_S0_S0_
+		00000000 0000004c W _Z3addIdET_S0_S0_
+		00000000 00000030 W _Z3addIiET_S0_S0_
 		...
 		\end{lstlisting}
 	\end{subfigure}
@@ -338,8 +338,8 @@ Beide Versionen wurden mit der Compiler Optimierung \textbf{-O0} kompiliert. Ana
 		$ arm-none-eabi-gcc -c -O0 main.c
 		$ arm-none-eabi-nm a.out --print-size
 		...
-		00000000 00000040 t a
-		00000040 00000048 t b
+		00000030 0000004c T add_d
+		00000000 00000030 T add_i
 		...
 		\end{lstlisting}
 	\end{subfigure}
@@ -355,11 +355,9 @@ Zudem kann man erkennen das die Funktionen in der C Version mit \textbf{t} marki
 		-> .text:
 		00000000 <main>:
 		...
-		
 		-> .text._Z3addIhET_S0_S0_:
 		00000000 <_Z3addIhET_S0_S0_>:
 		...
-
 		-> .text._Z3addIsET_S0_S0_:
 		00000000 <_Z3addIsET_S0_S0_>:
 		...
@@ -375,10 +373,8 @@ Zudem kann man erkennen das die Funktionen in der C Version mit \textbf{t} marki
 		00000088 <main>:
 		...
 		
-		
 		00000000 <a>:
 		...
-		
 		
 		00000040 <b>:
 		...
@@ -386,8 +382,8 @@ Zudem kann man erkennen das die Funktionen in der C Version mit \textbf{t} marki
 	\end{subfigure}
 \end{figure}
 
-\subsubsection{Fazit}
-Funktions- Templates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion beheben muss und somit die Wartbarkeit erheblich erhöhen. Zudem kann sich die Verwendung von Templates positiv auf die Größe des Executables auswirken da der Linker Optimierungen vornehmen kann. Templates sollten auch wenn möglich in einer header Datei definiert werden und wenn nötig in der .cpp Datei eingebunden werden. Bei großen Projekten kann sich dies jedoch negativ auf die Übersetzungszeit auswirken da der Template Code mehrmals kompiliert werden muss.
+\subsection{Fazit}
+Funktionstemplates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion beheben muss was die Wartbarkeit erheblich erhöht. Zudem kann sich die Verwendung von Templates positiv auf die Größe des Executables auswirken da der Linker Optimierungen vornehmen kann. Templates sollten auch wenn möglich in einer header Datei definiert werden und wenn nötig in der .cpp Datei eingebunden werden. Bei großen Projekten kann sich dies jedoch negativ auf die Übersetzungszeit auswirken da der Template Code mehrmals kompiliert werden muss.
 \newpage
 
 \subsection{Arrays}

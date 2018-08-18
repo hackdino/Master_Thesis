@@ -1,13 +1,13 @@
-static int add_i(int a, int b){
+int add_i(int a, int b){
   return a + b;
 }
 
-static double add_d(double a,double b){
+double add_d(double a,double b){
   return a + b;
 }
 
-volatile int i_1=3, i_2=4, i_3=0;
-volatile double d_1=3, d_2=4, d_3=0;
+int i_1=3, i_2=4, i_3=0;
+double d_1=3, d_2=4, d_3=0;
 
 int main() {
 

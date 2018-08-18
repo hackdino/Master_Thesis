@@ -1,19 +1,18 @@
-#include <stdint.h>
-volatile uint8_t a_1=3, a_2=4, a_3=0;
-volatile int16_t b_1=5, b_2=6, b_3=0;
+int i_1=3, i_2=4, i_3=0;
+double d_1=5, d_2=6, d_3=0;
 
-static uint8_t a(uint8_t a, uint8_t b){
+int add_i(int a, int b){
   return a + b;
 }
 
-static int16_t b(int16_t a, int16_t b){
+double add_d(double a, double b){
   return a + b;
 }
 
 int main() {
 
-  a_3 = a(a_1, a_2);
-  b_3 = b(b_1, b_2);
+  i_3 = add_i(i_1, i_2);
+  d_3 = add_d(d_1, d_2);
 
   return 0;
 }

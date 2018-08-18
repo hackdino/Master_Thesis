@@ -1,8 +1,7 @@
-static int __attribute__ ((noinline)) 
-uart_init(int baud,
-          int Ndata,
-          int parity,
-          int stop){
+int uart_init(int baud,
+              int Ndata,
+              int parity,
+              int stop){
   
   if(baud < 0)
     baud = 9600;
@@ -16,7 +15,7 @@ uart_init(int baud,
   return baud+Ndata+parity+stop;
 }
 
-volatile int ret=0;
+int ret=0;
 
 int main() {
 
