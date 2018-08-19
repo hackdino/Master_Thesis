@@ -6,5 +6,4 @@ void func(void)
 }
 
 
-
 /*EOF*/

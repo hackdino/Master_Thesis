@@ -5,6 +5,5 @@ void func(void)
   buffer[1] = 'B';
 
   // buffer verwenden
-
   delete[] buffer;
 }

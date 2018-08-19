@@ -345,7 +345,7 @@ Beide Versionen wurden mit der Compiler Optimierung \textit{-O0} kompiliert. Ana
 	\end{subfigure}
 \end{figure}
 
-Zudem kann man erkennen das die Funktionen in der C Version mit \textbf{t} markiert sind und somit in die \textit{.text} Sektion gelinkt werden. Würde man in einer anderen C Datei genau die gleiche Funktionen implementieren würde man nach dem linken 2 Versionen von genau der gleichen Funktion in der auszuführenden Datei (Executable) finden. Hierbei sind die Funktionen a und b fest an die jeweilige Objektdatei gebunden. In der C++ Version sind beide Funktionen als WEAK deklariert und befinden sich in einer eigenen Link Sektion. Dies ermöglicht es dem Linker Optimierungen vorzunehmen falls es mehrere Implementierungen des gleichen Templates in verschieden Objekt Dateien gibt. Dieses Compiler Verhalten ist auch unter dem Namen \textbf{Borland Model} bekannt.
+Zudem kann man erkennen das die Funktionen in der C Version mit \textit{t} markiert sind und somit in die \textit{.text} Sektion gelinkt werden. Würde man in einer anderen C Datei genau die gleiche Funktionen implementieren würde man nach dem linken 2 Versionen von genau der gleichen Funktion in der auszuführenden Datei (Executable) finden. Hierbei sind die Funktionen a und b fest an die jeweilige Objektdatei gebunden. In der C++ Version sind beide Funktionen als \textit{WEAK} deklariert und befinden sich in einer eigenen Link Sektion. Dies ermöglicht es dem Linker Optimierungen vorzunehmen falls es mehrere Implementierungen des gleichen Templates in verschieden Objekt Dateien gibt. Dieses Compiler Verhalten ist auch unter dem Namen \textbf{Borland Model} bekannt.
 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -386,11 +386,26 @@ Zudem kann man erkennen das die Funktionen in der C Version mit \textbf{t} marki
 Funktionstemplates erhöhen die Lesbarkeit des Quellcodes und bewirken das man Fehler nur in einer Funktion beheben muss was die Wartbarkeit erheblich erhöht. Zudem kann sich die Verwendung von Templates positiv auf die Größe des Executables auswirken da der Linker Optimierungen vornehmen kann. Templates sollten auch wenn möglich in einer header Datei definiert werden und wenn nötig in der .cpp Datei eingebunden werden. Bei großen Projekten kann sich dies jedoch negativ auf die Übersetzungszeit auswirken da der Template Code mehrmals kompiliert werden muss.
 \newpage
 
+\section{Die Standardbibliothek}
+Dieses Kapitel widmet sich der Standardbibliothek welche ein wichtiger Bestandteil von C++ darstellt. Einige Begriffe welche im Zusammenhang mit der Bibliothek öfters genannt werden sollen hier näher beschrieben werden und auch die Frage ob sich der Einsatz in embedded Projekten lohnt soll hier beantwortet werden.
+\subsection{Überblick}
+Die Standardbibliothek is ein fester Bestandteil von C++ und wird von der ISO Organisation verwaltet. Diese wurde ursprünglich unter dem Namen STL (Standard Template Library) von Hewlett-Packard entwickelt und in den C++ Standard integriert. Jedoch handelt es sich nach wie vor um 2 getrennte Bibliotheken die parallel weiterentwickelt werden. Die C++ Standardbibliothek beinhaltet nützliche Funktionen und Algorithmen welche sehr beliebt sind. Zusätzlich beinhaltet die Standardbibliothek auch die komplette C Bibliothek. 
+
+\subsubsection{Container-Klassen}
+Container-Klassen sind generische Klassen welche andere Objekte und Datentypen speichern und verwalten können. Diese sind meistens als Template-Klassen implementiert wodurch man diese für die meisten Datentypen benutzen kann. Die bekanntestes Container sind \textit{std::vector} und \textit{std:array} welche auch in den nachfolgenden Kapiteln analysiert werden.
+\subsubsection{Iteratoren}
+An sich sind Iteratoren nichts anderes als intelligente Zeiger welche benutzt werden um durch die Elemente eines Container zu iterieren. Iteratoren sind reine Zugriffsobjekte und stellen die Schnittstelle für Algorithmen in C++ dar.
+\subsubsection{Algorithmen}
+Mit Algorithmen kann man Manipulationen an Container vornehmen. Diese sind Container unabhängig implementiert und benutzen Iteratoren um auf die Container Elemente zuzugreifen. Der \textit{std::for\_each} Algorithmus ist einer der bekanntesten mit dem man auf alle Elemente eines Containers Zugriff bekommt.
+\subsubsection{Die Standard Bibliothek in embedded Projekten}
+Die Bibliothek ist bekannt dafür dass diese eigenständig viel Speicher zur Laufzeit am Heap oder Stack alloziert. Zudem benötigt diese doch relativ viel Speicher womit sie für sehr kleine Microkontroller nicht in frage kommt. Jedoch sollen in den nächsten Kapiteln einige interessante Elemente analysiert werden.
+\newpage
+
 \subsection{Arrays}
-In C++ gibt es mehrere Möglichkeiten Daten in Arrays zusammenzufassen. C- Array, \textit{sdt::vector} und \textit{std::array} sind die 3 bekanntesten Modelle um Daten zu speichern und werden in diesem Kapitel näher unter die Lupe genommen. Als embedded Programmierer sollte man genau wissen welche Methode für den jeweiligen Anwendungsfall die beste Wahl ist.
+In C++ gibt es mehrere Möglichkeiten Daten in Arrays zusammenzufassen. C-Array, \textit{sdt::vector} und \textit{std::array} sind die 3 bekanntesten Modelle um Daten zu speichern und werden in diesem Kapitel näher unter die Lupe genommen. Als embedded Programmierer sollte man genau wissen welche Methode für den jeweiligen Anwendungsfall die beste Wahl ist.
 
 \subsubsection{C- Array / std::array}
-Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ weiter verwendet werden. Jedoch sollte man in neuen Projekten darauf verzichten da es in der Standard C++ Bibliothek verschiedene Containerklassen gibt die übersichtlicher aufgebaut sind und somit gängige Fehler im Vorhinein eliminieren. Die \textit{std::array} Containerklasse is das Pendant zum C- Array, bietet jedoch einige Vorteile was Elementzugriff oder Informationen über die Kapazität das Arrays betrifft. Näher zu erwähnen ist die Methode \textbf{at} mit der man Zugriff auf einzelne Elemente des Arrays bekommt, jedoch gegenüber \textbf{[ ]} eine Grenzen Überprüfung während der Laufzeit stattfindet. Dies kann sehr nützlich sein da der Zugriff auf nicht existierende Elemente einer der häufigsten Fehler bei C- Arrays darstellt. \newline \newline Ein zusätzlicher Vorteil bieten die Standard C++ Containerklassen da diese Iteratoren zu Verfügung stellen womit man verschiedene Algorithmen der Standard Bibliothek verwenden kann. Somit kann man auf vorhandenen und getesteten Code zurückgreifen wenn es ums sortieren oder das manipulieren eines Arrays geht. \newline \newline Das nachfolgende Beispiel zeigt wie man mittels C- Array und \textit{std::array} ein \textbf{int} Array mit jeweils 10 Elementen mit 0 initialisiert und dann mit Daten befühlt.
+Das klassische C-Array ist nach wie vor weit verbreitet und kann auch in C++ weiter verwendet werden. Jedoch sollte man in neuen Projekten darauf verzichten da es in der Standard C++ Bibliothek verschiedene Containerklassen gibt die übersichtlicher aufgebaut sind und somit gängige Fehler im Vorhinein eliminieren. Die \textit{std::array} Containerklasse is das Pendant zum C-Array, bietet jedoch einige Vorteile was Elementzugriff oder Informationen über die Kapazität das Arrays betrifft. Näher zu erwähnen ist die Methode \textit{at} mit der man Zugriff auf einzelne Elemente des Arrays bekommt, jedoch gegenüber \textit{[ ]} eine Grenzen Überprüfung während der Laufzeit stattfindet. Dies kann sehr nützlich sein da der Zugriff auf nicht existierende Elemente einer der häufigsten Fehler bei C-Arrays darstellt. \newline \newline Ein zusätzlicher Vorteil bieten die Standard C++ Containerklassen da diese Iteratoren zu Verfügung stellen womit man verschiedene Algorithmen der Standard Bibliothek verwenden kann. Somit kann man auf vorhandenen und getesteten Code zurückgreifen wenn es ums sortieren oder das manipulieren eines Arrays geht. \newline \newline Das nachfolgende Beispiel zeigt wie man mittels C-Array und \textit{std::array} ein \textit{int} Array mit jeweils 10 Elementen mit 0 initialisiert und dann mit Daten befühlt.
 
 
 \begin{figure}[!htb]
@@ -408,10 +423,10 @@ Das klassische C- Array ist nach wie vor weit verbreitet und kann auch in C++ we
 \end{figure}
 
 \subsubsection{std::vector}
-Bei der \textit{sdt::vector} Containerklasse hat man die Möglichkeit die Größe des Arrays dynamisch anzupassen. Somit ist \textit{sdt::vector} wesentlich komplexer und mit Vorsicht zu genießen da Speicher zur Laufzeit am Stack oder Heap alloziert werden muss. Dies ist auch dadurch zu erkennen dass sizeof(std::vector<int>) nicht wie bei \textit{std::array} oder dem C- Array die eigentliche Größe in Bytes zurückliefert sondern immer 12 welche lediglich zur Verwaltung von \textit{std::vector} benötigt werden und die eigentlichen Daten am Heap gespeichert werden. Bei embedded Projekten sollte man auf die \textit{sdt::vector} Klasse verzichten und wenn eine dynamische Speicherverwaltung von Nöten ist bieten gängige RTOS oder OS Systeme bessere Mechanismen an, die im Fehlerfall (Heap/Stack Überläufe) wesentlich besser zu Debuggen sind.
+Bei der \textit{sdt::vector} Containerklasse hat man die Möglichkeit die Größe des Arrays dynamisch anzupassen. Somit ist \textit{sdt::vector} wesentlich komplexer und mit Vorsicht zu genießen da Speicher zur Laufzeit am Stack oder Heap alloziert werden muss. Dies ist auch dadurch zu erkennen dass sizeof(std::vector<int>) nicht wie bei \textit{std::array} oder dem C-Array die eigentliche Größe in Bytes zurückliefert sondern immer 12 welche lediglich zur Verwaltung von \textit{std::vector} benötigt werden und die eigentlichen Daten am Heap gespeichert werden. Bei embedded Projekten sollte man auf die \textit{sdt::vector} Klasse verzichten und wenn eine dynamische Speicherverwaltung von Nöten ist bieten gängige RTOS oder OS Systeme bessere Mechanismen an, die im Fehlerfall (Heap/Stack Überläufe) wesentlich besser zu Debuggen sind.
 
 \subsubsection{Analyse}
-Kompiliert man die C- Array und \textit{std::array} Variante jeweils mit der Optimierungsstufe \textbf{-0s} kann man keinen unterschied zwischen den beiden Implementierungen feststellen. Jedoch einsteht ein geringer Overheat bei Verwendung von \textit{std::array} in Kombination mit niedrigeren Optimierungsstufen die durch die höhere Abstraktion zum eigentlichen Speicher Segment zu erklären ist. Auch zu erkennen ist dass bei beiden Implementierungen jeweils Speicher für genau 10 \textbf{int} Werte statisch in der \textbf{bss} Sektion reserviert wird.
+Kompiliert man die C- Array und \textit{std::array} Variante jeweils mit der Optimierungsstufe \textit{-0s} kann man keinen unterschied zwischen den beiden Implementierungen feststellen. Jedoch einsteht ein geringer Overheat bei Verwendung von \textit{std::array} in Kombination mit niedrigeren Optimierungsstufen die durch die höhere Abstraktion zum eigentlichen Speicher Segment zu erklären ist. Auch zu erkennen ist dass bei beiden Implementierungen jeweils Speicher für genau 10 \textit{int} Werte statisch in der \textit{.bss} Sektion reserviert wird.
 
 
 \begin{figure}[!htb]
@@ -443,7 +458,7 @@ Kompiliert man die C- Array und \textit{std::array} Variante jeweils mit der Opt
 \end{figure}
 
 \subsubsection{Fazit}
-Schlussfolgernd kann man Sagen dass \textit{std::array} ohne weiteres in embedded Projekten verwenden werden darf und eine Reihe von Vorteilen gegenüber dem C- Array bietet. Auch die Kompatibilität zu älterem Code der möglicherweise noch klassische Pointer benötigt sollte kein Problem darstellen da man mit der \textit{std::array} Methode \textbf{data} direkten Zugriff auf das darunterliegende Array bekommt. In der Standard C++ Bibliothek findet man auch noch einige andere Containerklassen wie \textit{std::list} oder \textit{std::deque} die sich zur Speicherung von Daten anbieten, jedoch auch wie \textit{std::vector} wesentlich komplexer sind und somit nur zum Einsatz kommen sollten wenn Speicherverbrauch und CPU Auslastung keine wesentliche Rolle spielen.
+Schlussfolgernd kann man Sagen dass \textit{std::array} ohne weiteres in embedded Projekten verwenden werden darf und eine Reihe von Vorteilen gegenüber dem C-Array bietet. Auch die Kompatibilität zu älterem Code der möglicherweise noch klassische Pointer benötigt sollte kein Problem darstellen da man mit der \textit{std::array} Methode \textit{data} direkten Zugriff auf das darunterliegende Array bekommt. In der Standard C++ Bibliothek findet man auch noch einige andere Containerklassen wie \textit{std::list} oder \textit{std::deque} die sich zur Speicherung von Daten anbieten, jedoch auch wie \textit{std::vector} wesentlich komplexer sind und somit nur zum Einsatz kommen sollten wenn Speicherverbrauch und CPU Auslastung keine wesentliche Rolle spielen.
 \newpage
 
 \subsection{Zeichenketten}
@@ -632,9 +647,9 @@ Ob man nun \textit{std::string} in seinem Projekt verwenden soll, hängt eher vo
 
 
 \newpage
-\subsection{Zeiger vs Referenzen}
+\section{Zeiger vs Referenzen}
 Wenn große Datenblöcke einer Funktion übergeben werden sollen, übergibt man meist nicht den kompletten Datenblock sondern eine Referenz oder einen Zeiger auf diesen. In C++ kann man dazu Referenzen benutzen welche meist eine bessere Alternative zu den Zeigern darstellen. Zeiger sind Variablen die auf eine Adresse im Speicher zeigen, welche Daten oder Programmcode beinhalten können. Mit Referenzen kann man dies auch, jedoch können diese während der gesamten Laufzeit immer nur auf ein Datenobjekt referenzieren und können daheer auch als eine Art Alias für ein anderes Objekt angesehen werden. Im gegensatz zu Referenzen können Zeiger ihren Wert verändern und somit während der Laufzeit auf beliebig viele Datenblöcke zeigen. Bei Zeigern besteht somit immer die Möglichkeit dass dieser nicht auf einen gültigen Speicherblock zeigt und sollte daheer immer auf dessen Gültigkeit überprüft werden. \newline \newline
-Wenn es ums manipulieren von Datenblöcken geht, sieht man sehr oft noch die Verwendung von Zeigern da man hier in einer Schleife alle Elemente eines Datenblock durch iterieren kann indem man den Zeiger bei jedem Durchlauf erhöht. Das nachfolgende Beispiel zeigt wie man die Verwendung von Zeigern vermeiden kann indem man seinen Code etwas moderner gestaltet. Das Beispiel- Programm soll die Daten von jeweils 100 Personen ausgeben.\newline
+Wenn es um das manipulieren von Datenblöcken geht, sieht man sehr oft noch die Verwendung von Zeigern da man hier in einer Schleife alle Elemente eines Datenblock durch iterieren kann indem man den Zeiger bei jedem Durchlauf erhöht. Das nachfolgende Beispiel zeigt wie man die Verwendung von Zeigern vermeiden kann indem man seinen Code etwas moderner gestaltet. Das Beispiel-Programm soll die Daten von jeweils 100 Personen ausgeben.\newline
 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -650,11 +665,12 @@ Wenn es ums manipulieren von Datenblöcken geht, sieht man sehr oft noch die Ver
 	\end{subfigure}
 \end{figure}
 
-Bei dem Zeiger- Beispiel wird zuerst ein neuer Datentyp \textit{Person} mittels \textit{typedef struct} angelegt welche die Daten einer Person beschreibt. In der main Funktion wird dann ein Array vom Type \textit{Person} mit der Größe 100 angelegt. Die Funktion welche die Informationen aller Personen ausgibt benötigt dann einen Zeiger auf das Array und die zusätzliche Information wie viele Elemente vom Type \textit{Person} ausgegeben werden sollen.\newline \newline
-Bei dem Beispiel mit Referenzen wird zuerst eine einfache Struktur \textit{data} mittels \textit{struct} angelegt und dann ein neuer Datentyp mithilfe der Containerklasse \textit{std::array} angelegt. Die Größe von 100 ist ein fixer Bestandteil dieses Datentyps womit man sich die Anzahl der auszugeben Elemente als Funktionsparameter sparen kann. Zudem kann man mit der \textit{for-each} Schleife die es seit C++11 gibt eleganter und sicherer durch alle Elemente durch iterieren. 
+Bei dem Zeiger-Beispiel wird zuerst ein neuer Datentyp \textit{Person} mittels \textit{typedef struct} angelegt welche die Daten einer Person beschreibt. In der main Funktion wird dann ein Array vom Type \textit{Person} mit der Größe 100 angelegt. Die Funktion welche die Informationen aller Personen ausgibt benötigt dann einen Zeiger auf das Array und die zusätzliche Information wie viele Elemente vom Type \textit{Person} ausgegeben werden sollen.\newline \newline
+Bei dem Beispiel mit Referenzen wird zuerst eine einfache Struktur \textit{data} mittels \textit{struct} angelegt und dann ein neuer Datentyp mithilfe der Containerklasse \textit{std::array} angelegt. Die Größe von 100 ist ein fixer Bestandteil dieses Datentyps womit man sich die Anzahl der auszugeben Elemente als Funktionsparameter sparen kann. Zudem kann man mit der \textit{for-each} Schleife die es seit C++11 gibt eleganter und sicherer durch alle Elemente des Objektes iterieren. 
 
-\subsubsection{Analyse}
+\subsection{Analyse}
 Die Analyse zeigt dass Referenzen keinesfalls einen Overhead an Speicher mit sich bringen. Das Beispiel mit Zeigern ist sogar um 9 Byte Größer was durch den zusätzlichen Parameter in der \textit{print\_info} Funktion zu erklären ist. Ersetzt man beim Zeiger Beispiel die Länge durch einen Konstanten Wert erzeugt der Compiler bei beiden Versionen genau das Gleiche Ergebnis.
+
 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -680,10 +696,10 @@ Die Analyse zeigt dass Referenzen keinesfalls einen Overhead an Speicher mit sic
 	\end{subfigure}
 \end{figure}
 
-\subsubsection{Fazit}
-Als Fazit kann man sagen dass man Referenzen gegenüber Zeigern wenn möglich bevorzugen soll und seinen Code so gestalten soll das die Verwendung von Zeigern überflüssig wird. Referenzen haben den Vorteil dass die Syntax mit dem Punkt Operator übersichtlicher wirkt, eine Referenz immer auf ein gültiges Datenobjekt zeigt und somit sicherer ist und gewisse Vorteile zeigen wenn es um kopier- Konstruktoren oder das Überladen von Operatoren geht.
+\subsection{Fazit}
+Als Fazit kann man sagen dass man Referenzen gegenüber Zeigern wenn möglich bevorzugen soll und seinen Code so gestalten soll das die Verwendung von Zeigern überflüssig wird. Referenzen haben den Vorteil dass die Syntax mit dem Punkt Operator übersichtlicher wirkt, eine Referenz immer auf ein gültiges Datenobjekt zeigt und somit sicherer zu verwenden ist. Zudem bieten Referenzen gewisse Vorteile bei Kopier-Konstruktoren oder beim überladen von Operatoren.
 \newpage
-\subsection{Namensräume}
+\section{Namensräume}
 Namensräume (Namespaces) sind vor allem dann nützlich wenn es um die modulare Programmierung geht. Hiermit können Namens Konflikte im Vorhinein eliminiert werden. Jeder war schon einmal in der Situation dass der Compiler einen Fehler produziert hat weil eine Funktion oder Variable schon einmal in einer anderen Datei deklariert wurde. Dies tritt vor allem bei größeren Projekten oder bei der Verwendung von externen Bibliotheken auf. In C++ kann man einzelnen Module in Namensräume verpacken um somit eine bessere Trennung von verschieden Code Teilen zu erlangen. Der Namensraum \textit{sdt} in dem sich die Standard C++ Module befinden dürfte jedem ein Begriff sein. Das nachfolgende Beispiel zeigt wie man Namensräume richtig verwenden kann um eine sinnvolle Modularisierung zu erreichen. \newline
 
 \begin{figure}[!htb]
@@ -718,13 +734,13 @@ Das Beispiel soll demonstrieren wie man einen Treiber für eine Serielle Schnitt
 Mit dem Schlüsselwort \textit{using} kann man dem Compiler mitteilen dass man nun die Funktionen welche sich im Namensraum \textit{driver} befinden verwenden möchte. Möchte man jedoch nicht den ganzen Namensraum einbinden kann man mit dem Scope Operator :: auf Funktionen oder Variablen aus dem jeweiligen Namensraum zugreifen.
 
 
-\subsubsection{Fazit}
+\subsection{Fazit}
 Namensräume sind ideal wenn es um die Modularisierung von Projekten geht und bieten sich perfekt an um Betriebssystem Funktionalitäten vom User Space zu trennen. Auch anonyme Namensräume sollten verwendet werden um Funktionalität nach außen hin zu verbergen. Ein Speicher Overhead kann auch nicht einstehen da Namensräume lediglich dazu dienen dem Compiler mitzuteilen welche Funktionen er zu verwenden hat.
 \newpage
 
-\subsection{Klassen}
+\section{Klassen}
 In diesem Kapitel werden die Klassen analysiert welche die Grundlage für das OOP Konzept in C++ darstellen. Dazu wird eine Beispiel Klasse implementiert die eine Serielle Schnittelle eines Mikrocontrollers beschreiben soll. Diese Klasse wird dann fortlaufend während des Kapitels erweitert und adaptiert um zu analysieren wie sich Klassen und dessen Konzepte in Bezug auf Performance und Speicher verhalten. Des weiteren werden in diesem Kapitel einige Richtlinien aufgestellt wie man Klassen sinnvoll in embedded Projekten einsetzen kann. 
-\subsubsection{Erstes Beispiel}
+\subsection{Erstes Beispiel}
 Die erste Definition unserer Klasse \textit{Serial} beinhaltet 2 private Variablen \textit{(baudrate, mode)} und 2 öffentliche Methoden \textit{(set\_baudrate, set\_mode)}. Wie im Beispiel ersichtlich sollte man Membervariablen wenn Möglich immer im \textit{private} Block definieren und den Zugriff nur über Methoden (Getters / Setters) erlauben. Dies hat den Vorteil dass man die Variablen nur über die öffentlichen Schnittellen \textit{(set\_baudrate, set\_mode)} verändern kann und somit auch den Wertebereich überprüfen kann. Das direkte verbergen von Daten führt zu einer Datenkapselung womit man die Klasse als einzelnes Modul besser testen kann und man die Gewissheit hat dass die Variablen sich im gewünschtem Wertebereich befinden. Die Klassendefinition und die Implementierung der Klasse sollte man auch immer in separate Dateien verpacken was zu einer besseren Übersichtlichkeit führt. \newline 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -763,7 +779,7 @@ Wie im Beispiel ersichtlich kann man mit C Strukturen sogar eine Art Vererbung n
 % Public vs Private ok
 % Datenkapselung (Getter & setter) ok
 
-\subsubsection{RAII-Idom}
+\subsection{RAII-Idom}
 Bevor wir mit den Konstruktoren und Destruktoren fortfahren soll hier kurz das RAII-Idom erläutert werden welches eine wichtige Programmiertechnik in C++ darstellt. RAII steht für "Resource acquisition is initialization" \space  was dafür sorgen soll dass bei der Ressourcenbelegung für ein Objekt die Initialisierung für dieses gleich mit erfolgt. Das nachfolgende Beispiel zeigt wie eine Array RAII oder nicht RAII Konform angelegen werden kann. Bei der \textit{Vector} Containerklasse wird automatisch der Konstruktor beim anlegen des Objektes aufgerufen und der Destruktor wenn der Funktionsblock verlassen wird. Bei dem nicht RAII Konformen Beispile wo Speicher mit \textit{new} alloziert wurde muss man das Array selber noch mit Initialisierungs- Daten befüllen und nach der Verwendung auch wieder dafür sorgen dass der allozierte Speicher mit \textit{delete} frei gegeben wird.
 
 \begin{figure}[!htb]
@@ -790,7 +806,7 @@ Dieses Konzept ist eines der größten Vorteile von C++ da hier der Compiler aut
 	% Rohe Zeiger als Klassenelemente
 	% Virtuelle methoden
 
-\subsubsection{Konstruktoren}
+\subsection{Konstruktoren}
 Um die Konstruktoren näher zu analysieren erweitern wir unsere \textit{Serial} Klasse um 2 Konstruktor Methoden. Der Standard Konstruktor welcher geltend ist wenn bei der Definition des Objektes keine Initialisierungswerte angegeben wurden. Diesen sollte man immer implementieren um das Objekt mit Standard Werten zu initialisieren außer man will explizit erreichen dass man das Objekt nur mit einem benutzerdefinierten Konstruktor erstellen kann. Mit dem 2 Konstruktor kann man das Objekt mit benutzerdefinierten Werten für \textit{baudreate} und \textit{mode} anlegen. Bei den Konstruktoren gelten die gleiche Regeln wie bei den Funktionsüberladungen womit man theoretisch eine unbegrenzte Zahl an Konstruktoren definieren kann. Zudem können auch Standardwerte in Konstruktoren verwendet werden. 
 
 \begin{figure}[!htb]
@@ -808,16 +824,16 @@ Um die Konstruktoren näher zu analysieren erweitern wir unsere \textit{Serial} 
 \end{figure}
 
 % C+11 Initilisierung von Variablen
-\subsubsection{Destruktoren}
-\subsubsection{Methoden}
+\subsection{Destruktoren}
+\subsection{Methoden}
 
 % Inline Methoden
 
 % Const Methoden
-\subsection{Operatoren Überladen}
-\subsection{Dynamische Speicher Objekte}
-\subsection{Fehlerbehandlung}
-\subsection{Eingabe- und Ausgabestreams}
+\section{Operatoren Überladen}
+\section{Dynamische Speicher Objekte}
+\section{Fehlerbehandlung}
+\section{Eingabe- und Ausgabestreams}
 
 
 
@@ -845,17 +861,11 @@ Um die Konstruktoren näher zu analysieren erweitern wir unsere \textit{Serial} 
 \addcontentsline{toc}{chapter}{\listacroname}
 \chapter*{\listacroname}
 \begin{acronym}[XXXXX]
-    \acro{ABC}[ABC]{Alphabet}
-    \acro{WWW}[WWW]{world wide web}
-    \acro{ROFL}[ROFL]{Rolling on floor laughing}
+    \acro{STL}[STL]{Standard Template Library}
+    \acro{ISO}[ISO]{International Organization for Standardization}
+    \acro{ROM}[ROM]{read-only memory}
+    \acro{RAM}[RAM]{random-access memory}
 \end{acronym}
 
-%
-% Hier beginnt der Anhang.
-%
-\clearpage
-\appendix
-\chapter{Anhang A}
-\clearpage
-\chapter{Anhang B}
+
 \end{document}
