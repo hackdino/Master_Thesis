@@ -833,11 +833,15 @@ Bei der Definition globaler Objekte muss man sich zusätzlich Gedanken machen zu
 	\label{fig:27}
 \end{figure}
 
-Üblicherweise müssen Mikrocontroller nach dem Power-On Reset initialisiert werden damit das Bus-System oder Taktsignal ordnungsgemäß funktioniert. Dies wird üblicherweise als erstes in der \textit{main} Funktion erledigt. Würde man jetzt im Konstruktor Funktionen aufrufen welche eine korrekte Initialisierung des Systems voraussetzten würde diese Operation fehlschlagen. In diesem Beispiel würde es zu einem Fehler kommen da man eine Serielle Schnittelle nicht initialisieren kann solange das Peripherie-Modul noch über kein Taktsignal verfügt. Um dieses Problem zu umgehen kann man eine separate Methode zur Initialisierung bereitstellen welche dann nach der Systeminitialisierung aufgerufen werden muss, oder man müsste im Konstruktor überprüfen ob das System bereits initialisiert wurde und wenn nicht eine Systeminitialisierung durchführen. Die eleganteste Methode ist jedoch wenn man das Objekt nicht global anlegt sondern erst dynamisch nach der Systeminitialisierung erzeugt. Verwendet man jedoch ein RTOS oder anderes OS System kann man davon ausgehen dass die Systeminitialisierung bereits durchgeführt wurde bevor Konstruktoren von globalen Objekten exekutiert werden.
+Üblicherweise müssen Mikrocontroller nach dem Power-On Reset initialisiert werden damit das Bus-System oder Taktsignal ordnungsgemäß funktioniert. Dies wird üblicherweise als erstes in der \textit{main} Funktion erledigt. Würde man jetzt im Konstruktor Operationen durchführen welche eine korrekte Initialisierung des Systems voraussetzten würde es zu einem Fehler kommen. In diesem Beispiel würde die Initialisierung der Seriellen Schnittelle im Konstruktor fehlschlagen da das Peripherie-Modul noch über kein Taktsignal verfügt. Um dieses Problem zu umgehen kann man eine separate Methode zur Initialisierung bereitstellen welche dann nach der Systeminitialisierung aufgerufen werden muss, oder man müsste im Konstruktor überprüfen ob das System bereits initialisiert wurde und wenn nicht eine Systeminitialisierung durchführen. Die eleganteste Methode ist jedoch wenn man das Objekt nicht global anlegt sondern erst dynamisch nach der Systeminitialisierung erzeugt. Verwendet man jedoch ein RTOS oder anderes OS System kann man davon ausgehen dass die Systeminitialisierung bereits durchgeführt wurde bevor Konstruktoren von globalen Objekten aufgerufen werden. \newline\newline
+Wir zur Laufzeit eine Instanz eines Objektes erzeugt wird dieses üblicherweise am Stack angelegt und wieder entfernt sobald der Gültigkeitsbereich in welcher die Instanz erstellt wurde verlassen wird. Solange das jeweilige Objekt über normale Datentypen wie \textit{(int, double, ...)} enthält funktioniert das automatisch. Wurde jedoch beim anlegen der Instanz Speicher mit \textit{new, malloc} im Konstruktor alloziert muss man sich selber im Destruktor darum kümmern das dieser wieder ordnungsgemäß freigegeben wird. Destuktoren und der Lebensbereich von Instanzen werden im nächsten Kapitel näher analysiert.
 
 % C+11 Initilisierung von Variablen
 \subsection{Destruktoren}
-\subsection{Methoden}
+
+\subsection{Vererbung und Polymorphie}
+
+\newpage
 
 % Inline Methoden
 
