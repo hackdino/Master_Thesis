@@ -404,58 +404,60 @@ Die Bibliothek ist bekannt dafür dass diese eigenständig viel Speicher zur Lau
 \subsection{Arrays}
 In C++ gibt es mehrere Möglichkeiten Daten in Arrays zusammenzufassen. C-Array, \textit{sdt::vector} und \textit{std::array} sind die 3 bekanntesten Modelle um Daten zu speichern und werden in diesem Kapitel näher unter die Lupe genommen. Als embedded Programmierer sollte man genau wissen welche Methode für den jeweiligen Anwendungsfall die beste Wahl ist.
 
-\subsubsection{C- Array / std::array}
-Das klassische C-Array ist nach wie vor weit verbreitet und kann auch in C++ weiter verwendet werden. Jedoch sollte man in neuen Projekten darauf verzichten da es in der Standard C++ Bibliothek verschiedene Containerklassen gibt die übersichtlicher aufgebaut sind und somit gängige Fehler im Vorhinein eliminieren. Die \textit{std::array} Containerklasse is das Pendant zum C-Array, bietet jedoch einige Vorteile was Elementzugriff oder Informationen über die Kapazität das Arrays betrifft. Näher zu erwähnen ist die Methode \textit{at} mit der man Zugriff auf einzelne Elemente des Arrays bekommt, jedoch gegenüber \textit{[ ]} eine Grenzen Überprüfung während der Laufzeit stattfindet. Dies kann sehr nützlich sein da der Zugriff auf nicht existierende Elemente einer der häufigsten Fehler bei C-Arrays darstellt. \newline \newline Ein zusätzlicher Vorteil bieten die Standard C++ Containerklassen da diese Iteratoren zu Verfügung stellen womit man verschiedene Algorithmen der Standard Bibliothek verwenden kann. Somit kann man auf vorhandenen und getesteten Code zurückgreifen wenn es ums sortieren oder das manipulieren eines Arrays geht. \newline \newline Das nachfolgende Beispiel zeigt wie man mittels C-Array und \textit{std::array} ein \textit{int} Array mit jeweils 10 Elementen mit 0 initialisiert und dann mit Daten befühlt.
+\subsubsection{C-Array / std::array}
+Das klassische C-Array ist nach wie vor weit verbreitet und kann auch in C++ weiter verwendet werden. Jedoch sollte man in neuen Projekten darauf verzichten da es in der Standard C++ Bibliothek verschiedene Containerklassen gibt die übersichtlicher aufgebaut sind und somit gängige Fehler im Vorhinein eliminieren. Die \textit{std::array} Containerklasse is das Pendant zum C-Array, bietet jedoch einige Vorteile was Elementzugriff oder Informationen über die Kapazität das Arrays betrifft. Näher zu erwähnen ist die Methode \textit{at} mit der man Zugriff auf einzelne Elemente des Arrays bekommt, jedoch gegenüber \textit{[ ]} eine Grenzen Überprüfung während der Laufzeit stattfindet. Dies kann sehr nützlich sein da der Zugriff auf nicht existierende Elemente einer der häufigsten Fehler bei C-Arrays darstellt.\newline\newline Das nachfolgende Beispiel zeigt wie man mittels C-Array und \textit{std::array} ein \textit{int} Array mit jeweils 10 Elementen mit 0 initialisiert und dann mit Daten befühlt. C-Arrays und \textit{std::array} sind beides statische Elemente wodurch dir Größe beim kompilieren bereits bekannt sein muss und nachträglich nicht mehr verändert werden kann. Die Verwendung von \textit{std::array} kann sich vor allem dann auszahlen wenn man viele Manipulation wie das Sortieren oder Ersetzen von Elementen vornimmt. In diesem Fall kann man auf getestete Algorithmen zurückgreifen welche durch die Bereitstellung von Iteratoren möglich ist.
 
 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
-		\lstset{language=C++,caption={C- Array}}
-		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/C_Array/c_array.cpp}
+		\lstset{language=C++,caption={std::array}}
+		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/std_array/stdArray.cpp}
 		\label{fig:7}
 	\end{subfigure}
 	%
 	\begin{subfigure}[b]{0.5\textwidth}
-		\lstset{language=C++,caption={std::array}}
-		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/std_array/stdArray.cpp}
+		\lstset{language=C++,caption={C-Array}}
+		\lstinputlisting{../Code_Samples/std_vector_vs_std_array_vs_c_array/C_Array/c_array.cpp}
 		\label{fig:8}
+	\end{subfigure}
+\end{figure}
+
+\subsubsection{Analyse C-Array/std::array}
+Kompiliert man die C-Array und \textit{std::array} Variante jeweils mit der Optimierungsstufe \textit{-0s} kann man keinen unterschied zwischen den beiden Implementierungen feststellen. Jedoch einsteht ein geringer Overheat bei Verwendung von \textit{std::array} in Kombination mit niedrigeren Optimierungsstufen die durch die höhere Abstraktion zum eigentlichen Speicher Segment zu erklären ist. Auch zu erkennen ist dass bei beiden Implementierungen jeweils Speicher für genau 10 \textit{int} Werte statisch in der \textit{.bss} Sektion reserviert wird.
+
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={std::array}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -Os st_array.cpp
+		$ arm-none-eabi-size a.out
+		text  data  bss  dec   hex
+		1840  1092  64   2996  bb4
+		
+		$ arm-none-eabi-nm a.out --print-size
+		...
+		00018bb0 00000028 B a
+		...
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={C-Array}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -Os c_array.cpp
+		$ arm-none-eabi-size a.out
+		text  data  bss  dec   hex
+		1840  1092  64   2996  bb4
+		
+		$ arm-none-eabi-nm a.out --print-size
+		...
+		00018bb0 00000028 B a
+		...
+		\end{lstlisting}
 	\end{subfigure}
 \end{figure}
 
 \subsubsection{std::vector}
 Bei der \textit{sdt::vector} Containerklasse hat man die Möglichkeit die Größe des Arrays dynamisch anzupassen. Somit ist \textit{sdt::vector} wesentlich komplexer und mit Vorsicht zu genießen da Speicher zur Laufzeit am Stack oder Heap alloziert werden muss. Dies ist auch dadurch zu erkennen dass sizeof(std::vector<int>) nicht wie bei \textit{std::array} oder dem C-Array die eigentliche Größe in Bytes zurückliefert sondern immer 12 welche lediglich zur Verwaltung von \textit{std::vector} benötigt werden und die eigentlichen Daten am Heap gespeichert werden. Bei embedded Projekten sollte man auf die \textit{sdt::vector} Klasse verzichten und wenn eine dynamische Speicherverwaltung von Nöten ist bieten gängige RTOS oder OS Systeme bessere Mechanismen an, die im Fehlerfall (Heap/Stack Überläufe) wesentlich besser zu Debuggen sind.
-
-\subsubsection{Analyse}
-Kompiliert man die C- Array und \textit{std::array} Variante jeweils mit der Optimierungsstufe \textit{-0s} kann man keinen unterschied zwischen den beiden Implementierungen feststellen. Jedoch einsteht ein geringer Overheat bei Verwendung von \textit{std::array} in Kombination mit niedrigeren Optimierungsstufen die durch die höhere Abstraktion zum eigentlichen Speicher Segment zu erklären ist. Auch zu erkennen ist dass bei beiden Implementierungen jeweils Speicher für genau 10 \textit{int} Werte statisch in der \textit{.bss} Sektion reserviert wird.
-
-
-\begin{figure}[!htb]
-	\begin{subfigure}[b]{0.5\textwidth}
-		\begin{lstlisting}[gobble=6, title={C- Array}, language=bash, numbers=none]
-		$ arm-none-eabi-size a.out
-		text  data  bss  dec   hex
-		1840  1092  64   2996  bb4
-		
-		$ arm-none-eabi-nm a.out --print-size
-		...
-		00018bb0 00000028 B a
-		...
-		\end{lstlisting}
-	\end{subfigure}
-	%
-	\begin{subfigure}[b]{0.5\textwidth}
-		\begin{lstlisting}[gobble=6, title={std::array}, language=bash, numbers=none]
-		$ arm-none-eabi-size a.out
-		text  data  bss  dec   hex
-		1840  1092  64   2996  bb4
-		
-		$ arm-none-eabi-nm a.out --print-size
-		...
-		00018bb0 00000028 B a
-		...
-		\end{lstlisting}
-	\end{subfigure}
-\end{figure}
 
 \subsubsection{Fazit}
 Schlussfolgernd kann man Sagen dass \textit{std::array} ohne weiteres in embedded Projekten verwenden werden darf und eine Reihe von Vorteilen gegenüber dem C-Array bietet. Auch die Kompatibilität zu älterem Code der möglicherweise noch klassische Pointer benötigt sollte kein Problem darstellen da man mit der \textit{std::array} Methode \textit{data} direkten Zugriff auf das darunterliegende Array bekommt. In der Standard C++ Bibliothek findet man auch noch einige andere Containerklassen wie \textit{std::list} oder \textit{std::deque} die sich zur Speicherung von Daten anbieten, jedoch auch wie \textit{std::vector} wesentlich komplexer sind und somit nur zum Einsatz kommen sollten wenn Speicherverbrauch und CPU Auslastung keine wesentliche Rolle spielen.
@@ -643,7 +645,7 @@ Da wir hier ein komplett lauffähiges Projekt mit OS analysieren ist die Größe
 \end{figure}
 \newpage
 \subsubsection{Fazit}
-Ob man nun \textit{std::string} in seinem Projekt verwenden soll, hängt eher von der generellen Frage ab ob man Funktionen aus der Standard C++ Bibliothek verwenden will. Kann man mit dem doch relativ hohen Overhead leben bietet \textit{std::string} doch einige Vorteile gegenüber klassischen C- Strings. Jedoch geht eher Gefahr mit der dynamischen Speicher Verwaltung von \textit{std::string} daheer, da diese doch relativ komplex sein kann und durchaus zu bösen Fehlern am Heap oder Stack führen kann.
+Ob man nun \textit{std::string} in seinem Projekt verwenden soll, hängt eher von der generellen Frage ab ob man Funktionen aus der Standard C++ Bibliothek verwenden will. Kann man mit dem doch relativ hohen Overhead leben bietet \textit{std::string} doch einige Vorteile gegenüber klassischen C-Strings. Jedoch geht eher Gefahr mit der dynamischen Speicher Verwaltung von \textit{std::string} daheer, da diese doch relativ komplex sein kann und durchaus zu bösen Fehlern am Heap oder Stack führen kann.
 
 
 \newpage
@@ -780,7 +782,7 @@ Wie im Beispiel ersichtlich kann man mit C Strukturen sogar eine Art Vererbung n
 % Datenkapselung (Getter & setter) ok
 
 \subsection{RAII-Idom}
-Bevor wir mit den Konstruktoren und Destruktoren fortfahren soll hier kurz das RAII-Idom erläutert werden welches eine wichtige Programmiertechnik in C++ darstellt. RAII steht für "Resource acquisition is initialization" \space  was dafür sorgen soll dass bei der Ressourcenbelegung für ein Objekt die Initialisierung für dieses gleich mit erfolgt. Das nachfolgende Beispiel zeigt wie eine Array RAII oder nicht RAII Konform angelegen werden kann. Bei der \textit{Vector} Containerklasse wird automatisch der Konstruktor beim anlegen des Objektes aufgerufen und der Destruktor wenn der Funktionsblock verlassen wird. Bei dem nicht RAII Konformen Beispile wo Speicher mit \textit{new} alloziert wurde muss man das Array selber noch mit Initialisierungs- Daten befüllen und nach der Verwendung auch wieder dafür sorgen dass der allozierte Speicher mit \textit{delete} frei gegeben wird.
+Bevor wir mit den Konstruktoren und Destruktoren fortfahren soll hier kurz das RAII-Idom erläutert werden welches eine wichtige Programmiertechnik in C++ darstellt. RAII steht für "Resource acquisition is initialization" \space  was dafür sorgen soll dass bei der Ressourcenbelegung für ein Objekt die Initialisierung für dieses gleich mit erfolgt. Das nachfolgende Beispiel zeigt wie eine Array RAII oder nicht RAII Konform angelegen werden kann. Bei der \textit{Vector} Containerklasse wird automatisch der Konstruktor beim anlegen des Objektes aufgerufen und der Destruktor wenn der Funktionsblock verlassen wird. Bei dem nicht RAII Konformen Beispile wo Speicher mit \textit{new} alloziert wurde muss man das Array selber noch mit Initialisierungs-Daten befüllen und nach der Verwendung auch wieder dafür sorgen dass der allozierte Speicher mit \textit{delete} frei gegeben wird.
 
 \begin{figure}[!htb]
 	\begin{subfigure}[b]{0.5\textwidth}
@@ -822,6 +824,16 @@ Um die Konstruktoren näher zu analysieren erweitern wir unsere \textit{Serial} 
 		\label{fig:26}
 	\end{subfigure}
 \end{figure}
+
+Bei der Definition globaler Objekte muss man sich zusätzlich Gedanken machen zu welchem Zeitpunkt der Konstruktor aufgerufen wird und ob dies zu diesem Zeitpunkt schon sinnvoll ist. Konstruktoren von globalen Objekten werden vor dem Eintritt in die \textit{main} Funktion aufgerufen wodurch das System möglicherweise noch nicht zu 100 Prozent initialisiert ist. Das nachfolgende Beispiel soll dieses Problem verdeutlichen. 
+
+\begin{figure}[!htb]
+	\lstset{language=C++,caption={Konstruktor Aufruf bei globalen Objeckten}}
+	\lstinputlisting{../Code_Samples/Klassen/ctor_global/main.cpp}
+	\label{fig:27}
+\end{figure}
+
+Üblicherweise müssen Mikrocontroller nach dem Power-On Reset initialisiert werden damit das Bus-System oder Taktsignal ordnungsgemäß funktioniert. Dies wird üblicherweise als erstes in der \textit{main} Funktion erledigt. Würde man jetzt im Konstruktor Funktionen aufrufen welche eine korrekte Initialisierung des Systems voraussetzten würde diese Operation fehlschlagen. In diesem Beispiel würde es zu einem Fehler kommen da man eine Serielle Schnittelle nicht initialisieren kann solange das Peripherie-Modul noch über kein Taktsignal verfügt. Um dieses Problem zu umgehen kann man eine separate Methode zur Initialisierung bereitstellen welche dann nach der Systeminitialisierung aufgerufen werden muss, oder man müsste im Konstruktor überprüfen ob das System bereits initialisiert wurde und wenn nicht eine Systeminitialisierung durchführen. Die eleganteste Methode ist jedoch wenn man das Objekt nicht global anlegt sondern erst dynamisch nach der Systeminitialisierung erzeugt. Verwendet man jedoch ein RTOS oder anderes OS System kann man davon ausgehen dass die Systeminitialisierung bereits durchgeführt wurde bevor Konstruktoren von globalen Objekten exekutiert werden.
 
 % C+11 Initilisierung von Variablen
 \subsection{Destruktoren}
@@ -865,6 +877,8 @@ Um die Konstruktoren näher zu analysieren erweitern wir unsere \textit{Serial} 
     \acro{ISO}[ISO]{International Organization for Standardization}
     \acro{ROM}[ROM]{read-only memory}
     \acro{RAM}[RAM]{random-access memory}
+    \acro{RTOS}[RTOS]{Real Time Operating System}
+    \acro{OS}[OS]{Operating System}
 \end{acronym}
 
 
