@@ -841,8 +841,26 @@ Wir zur Laufzeit eine Instanz eines Objektes erzeugt wird dieses üblicherweise 
 
 % C+11 Initilisierung von Variablen
 \subsection{Destruktoren}
+Unsere Serial Klasse wird nun um einen Sende Buffer welcher bis zu 100 Zeichen speichern kann erweitert. Dieses \textit{char} Array wird im Konstruktor mit \textit{new} dynamisch angelegt. Anders als bei den Standard Datentypen wie \textit{int} oder \textit{double} wird dieser Speicher nicht automatisch wieder aufgeräumt. Verwendet man die Schlüsselwörter \textit{new} oder \textit{malloc} im Konstruktor muss man unbedingt daran denken einen Destruktor zu definieren wo man den allozierten Speicher wieder frei gibt. Das nachfolgende Beispiel demonstriert die Verwendung eines Destruktors im Bezug auf unsere Serial Klasse.  
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassen Implementierung}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V3/serial.cpp}
+		\label{fig:28}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassendefinition}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V3/serial.h}
+		\label{fig:29}
+	\end{subfigure}
+\end{figure}
+
+Zusätzlich hat unsere Serial Klasse eine Konstruktor Definition weniger als noch in der vorherigen Version. Dies ist möglich das man in C++ Konstruktoren delegieren kann was einiges an Tipparbeit ersparen kann da man nur Code für einen Konstruktor schreiben muss. Der Standardkonstruktor welcher in der vorherigen Version die Klasse mit den Default Werten \textit{9600, 1} initialisiert hat muss jetzt nicht mehr extra definiert werden sondern wird auf einen andern Konstruktor delegiert. Wenn man mehrere Konstruktoren in der Klassendefinition deklariert jedoch nur einen Konstruktor definiert auf welchen alle anderen delegiert werden ist ein sehr schöner Programmierstil da man sich nicht darum kümmern muss Fehler in jeder Konstruktor Version zu beheben. Hätte man in diesem Beispiel die Containerkasse \textit{std::array} verwendet müsste man den Speicher nicht im Destruktor freigeben da diese Klasse schon über einen eignen Destruktor verfügt welcher automatisch aufgerufen wird.
 
 \subsection{Vererbung und Polymorphie}
+TODO...
 
 \newpage
 
