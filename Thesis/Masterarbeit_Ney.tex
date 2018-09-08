@@ -857,18 +857,138 @@ Unsere Serial Klasse wird nun um einen Sende Buffer welcher bis zu 100 Zeichen s
 	\end{subfigure}
 \end{figure}
 
-Zusätzlich hat unsere Serial Klasse eine Konstruktor Definition weniger als noch in der vorherigen Version. Dies ist möglich das man in C++ Konstruktoren delegieren kann was einiges an Tipparbeit ersparen kann da man nur Code für einen Konstruktor schreiben muss. Der Standardkonstruktor welcher in der vorherigen Version die Klasse mit den Default Werten \textit{9600, 1} initialisiert hat muss jetzt nicht mehr extra definiert werden sondern wird auf einen andern Konstruktor delegiert. Wenn man mehrere Konstruktoren in der Klassendefinition deklariert jedoch nur einen Konstruktor definiert auf welchen alle anderen delegiert werden ist ein sehr schöner Programmierstil da man sich nicht darum kümmern muss Fehler in jeder Konstruktor Version zu beheben. Hätte man in diesem Beispiel die Containerkasse \textit{std::array} verwendet müsste man den Speicher nicht im Destruktor freigeben da diese Klasse schon über einen eignen Destruktor verfügt welcher automatisch aufgerufen wird.
+Zusätzlich hat unsere Serial Klasse eine Konstruktor Definition weniger als noch in der vorherigen Version. Dies ist möglich da man in C++ Konstruktoren delegieren kann was einiges an Tipparbeit ersparen kann da man nur Code für einen Konstruktor schreiben muss. Der Standardkonstruktor welcher in der vorherigen Version die Klasse mit den Default Werten \textit{9600, 1} initialisiert hat muss jetzt nicht mehr extra definiert werden sondern wird auf einen andern Konstruktor delegiert. Wenn man mehrere Konstruktoren in der Klassendefinition deklariert jedoch nur einen Konstruktor definiert auf welchen alle anderen delegiert werden ist ein sehr schöner Programmierstil da man sich nicht darum kümmern muss Fehler in jeder Konstruktor Version zu beheben. Hätte man in diesem Beispiel die Containerkasse \textit{std::array} verwendet müsste man den Speicher nicht im Destruktor freigeben da diese Klasse schon über einen eignen Destruktor verfügt welcher automatisch aufgerufen wird.
 
 \subsection{Vererbung und Polymorphie}
-TODO...
+In diesem Kapitel wird der Overhead welcher bei der Verwendung von virtuellen Methoden oder mehrfacher Vererbung auftritt näher analysiert. In der Literatur liest man häufig von einem großen Overhead wenn es um virtuelle Funkionen oder mehrfache Vererbung geht, jedoch wird meist der Grund dafür nicht sehr eindeutig erläutert. Um die Probleme zu verdeutlichen werden wir zuerst eine einfache Basis Klasse kreieren von welcher dann unsere Serial Klasse abgeleitet wird.
 
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Basis Klasse}}
+		\lstinputlisting{../Code_Samples/Klassen/Basis_Klasse/com.h}
+		\label{fig:30}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassendefinition}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V4/serial.h}
+		\label{fig:31}
+	\end{subfigure}
+\end{figure}
+
+Wie im Beispiel ersichtlich wurde eine Klasse \textit{Com} erzeugt welche als Basis für jegliche Kommunikationsschnittellen wie UART, SPI oder I2C dienen soll. Die Klasse verfügt über eine private Variable \textit{status} welche über die öffentlichen Schnittellen \textit{set\_status} und \textit{get\_status} angegriffen werden kann und über eine virtuelle Methode \textit{send\_byte} welche im Normalfall von der ableitenden Klasse überschrieben werden soll. Wird diese nicht überschrieben oder verwendet man die \textit{Com} Klasse als einzelnes Modul wird die Ausgabe von \textit{send\_byte} zum Debug Interface oder zu STDIO weitergeleitet. \newline \newline Die Verwendung von Basisklassen führt meist zu sehr elegantem Code da man gemeinsame Funktionalitäten wie das auch bei Kommunikationsschnittellen der Fall ist sehr gut gruppieren kann. Auch für Benutzer einer API bringt das enorme Vorteile da die Funktionen einer SPI oder I2C Schnittelle sich in vielen Punkten ähneln was zu einer besseren Übersichtlichkeit führt. Jedoch muss man viel mehr Zeit in die Design Phase investieren und sich genau Überlegen wie man die Funktionalität sinnvoll modularisieren kann. 
+
+\newpage
+ 
+\subsubsection{Einfache Vererbung}
+Zuerst analysieren wir die einfache Vererbung ohne Verwendung der virtuellen Methode \textit{send\_byte}. In diesem Fall wird die Basisklasse \textit{Com} lediglich um die Funktionalität welche in der \textit{Serial} Klasse definiert wurde erweitert. Man spricht dann von einfacher Vererbung wenn eine Klasse immer nur von einer anderen Klasse erbt. Das nachfolgende Diagramm soll dies verdeutlichen.
+\newline
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.65]{../Grafiken/einfache_vererbung.png}
+	\caption{Einfache Vererbung}
+	\label{fig:32}
+\end{figure}
+
+Die Verwendung von einfacher Vererbung erzeugt keiner Overhead an Speicher und verändert auch das Laufzeitverhalten des Programmes nicht. Dies ist möglich da der Compiler die Funktionen statisch Binden kann da es immer eindeutig ist welche Funktion aufgerufen werden soll. Um zu analysieren ob der Compiler keine zusätzlichen Daten einbaut überprüfen wir die Größe der Serial Klasse mit \textit{sizeof}. Das Ergebnis von sizeof(Serial) liefert 16 Byte welche sich wie in Tabelle \ref{tbl:4} beschrieben zusammensetzen.
+
+\begin{table}[!htb]
+	\centering
+	\begin{tabular}{| l | c | r |}
+		\hline
+		\textbf{Variable}   & \textbf{Bytes}    \\ \hline
+		int baudrate (Serial)        & 4				    \\ \hline
+		int mode (Serial)            & 4 	    		\\ \hline
+		char *buffer (Serial)       & 4		            \\ \hline
+		int status (Com)       & 4  			    \\ \hline
+		\textbf{sizeof(Serial)} & 16 \\ \hline
+
+		
+	\end{tabular}
+	
+	\caption{Sizeof(Serial)}
+	\label{tbl:4}
+	% Verweis im Text mittels \ref{tbl:beispieltabelle}
+\end{table}
+
+Die 16 Byte setzen sich nur aus den Member Variablen zusammen welche in den Klassen \textit{Com} und \textit{Serial} definiert wurden. Somit ist bewiesen das einfache Vererbung keinen Speicher Overheat mit sich bringt und sich identisch verhält als hätte man in C mehrere Strukturen ineinander verschachtelt. Bei der einfachen Vererbung werden die Elemente der Basisklasse einfach vor die Elemente der abgeleiteten Klasse gelegt und der Aufruf einer Elementfunktion erfolgt auch ohne zusätzlichen Overhead.   \newpage
+
+
+\subsubsection{Virtuelle Methoden}
+Virtuelle Methoden erlauben es einer Klasse Methoden zu überschreiben welche bereits (virtuell) in der Basisklasse definiert wurden. Jedoch führt die Verwendung von virtuellen Methoden zu einigen Schwierigkeiten da der Compiler die Methoden jetzt nicht mehr statisch Binden kann sondern zur Laufzeit ein dynamisches Binden der Methoden durchgeführt werden muss. Um dieses Problem zu lösen fügt der Compiler eine Tabelle (Virtual Function Table) ein welche die Referenz auf die zu verwendete Methode beinhaltet. Diese Tabelle wird im Konstruktor des Objektes erzeugt und muss jedes mal durchsucht werden wenn eine virtuelle Funktion aufgerufen wird. Dies hat den Nachtteil das die Tabelle zusätzlichen Speicher belegt und das Laufzeitverhalten beeinflusst wird da bei jedem Aufruf einer virtuellen Funktion zusätzlichen Code ausgeführt werden muss.\newline Um dieses Problem zu verdeutlichen erweitern wir unsere Serial Klasse so dass die virtuellen Funktionen welche in der Basisklasse \textit{Com} virtuell implementiert wurden überschrieben werden. Seit C++11 kann man mit dem Schlüsselwort \textit{override} dem Compiler explizit sagen das eine Funktion überschrieben werden soll was bei schwer auffindbaren Tippfehlern hilfreich sein kann.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassen Implementierung}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V5/serial.cpp}
+		\label{fig:33}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Klassendefinition}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V5/serial.h}
+		\label{fig:34}
+	\end{subfigure}
+\end{figure}
+\newpage
+
+Wie in Abbildung 27 ersichtlich besteht nun das Problem das man zur Laufzeit eine dynamische Bindung der Funktion \textit{send\_byte} mit Hilfe der \textit{Virtual Function Table} durchführen muss. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.65]{../Grafiken/Virtuelle_Funktionen.png}
+	\caption{Einfache Vererbung}
+	\label{fig:35}
+\end{figure}
+
+Um nun zu Überprüfen wie sich virtuelle Funktionen auf den Speicherverbrauch unserer \textit{Serial} Klasse auswirken schauen wir uns das Ergebnis von \textit{sizeof(Serial)} erneut an. Nun erhält man das Ergebnis von 20 Byte welche sich wie in Tabelle 5 beschrieben zusammensetzen. Ein zusätzlicher Zeiger (4 Byte) welcher auf die \textit{Virtual Funktion Table} zeigt ist in der Basisklasse \textit{Com} dazugekommen. Die VFT Tabelle kann je nach Compiler Konfiguration in eine Sektion im ROM oder RAM gelinkt werden und beinhaltet für jede virtuelle Funktion einen Eintrag. Somit einsteht ein Speicher Overhead welcher sich durch die Größe der VFT Tabelle und dem Zeiger auf diesen zusammensetzt. 
+
+\begin{table}[!htb]
+	\centering
+	\begin{tabular}{| l | c | r |}
+		\hline
+		\textbf{Variable}   & \textbf{Bytes}    \\ \hline
+		int baudrate (Serial)        & 4				    \\ \hline
+		int mode (Serial)            & 4 	    		\\ \hline
+		char *buffer (Serial)       & 4		            \\ \hline
+		int status (Com)       & 4  			    \\ \hline
+		Pointer to VFT (Com)       & 4  			    \\ \hline
+		\textbf{sizeof(Serial)} & 20 \\ \hline
+		
+		
+	\end{tabular}
+	
+	\caption{Sizeof(Serial)}
+	\label{tbl:5}
+	% Verweis im Text mittels \ref{tbl:beispieltabelle}
+\end{table}
+
+Die Verwendung von vielen virtuellen Funktionen wirkt sich dadurch extrem negativ auf die Laufzeit des Programmes aus da bei jedem Funktionsaufruf einer virtuellen Funktion die Tabelle durchsucht werden muss und diese auch beim Anlegen eines solchen Objektes zuerst erzeugt werden muss. Der genaue Ovehead hängt natürlich von der Größe der VFT Tabelle ab.\newline \newline Ein Beispiel soll noch einmal verdeutlichen warum die VFT Tabelle benötigt wird und warum der Compiler keine statische Bindung der Funktion \textit{send\_byte} zur Übersetzungszeit durchführen kann. Im nachfolgenden Beispiel wird ein Objekt \textit{ser} vom Typ \textit{Serial} angelegt. Zusätzlich wurde eine Funktion \textit{send} implementiert die ein Zeichen auf der verwendeten Schnittelle ausgibt. Die Funktion benötigt dafür einen Parameter welcher vom Typ \textit{Com} ist um die Funktion allgemein zu halten. Somit kann die Funktion für alle Objekte verwendet werden welche von der Basisklasse \textit{Com} erben und ist unabhängig von der eigentlichen Schnittelle (I2C, SPI oder UART). Darin besteht auch jetzt das Problem da die Funktion \textit{send} ohne Hilfe der VFT nicht weiß welche \textit{send\_byte} Funktion verwendet werden soll. Dies ist auch der Grund warum sich der Zeiger welcher auf die VFT Tabelle zeigt auch immer in der Basisklasse befinden muss was wir vorher mit \textit{sizeof(Serial)} auch herausgefunden haben.
+
+\begin{figure}[!htb]
+
+		\lstset{language=C++,caption={Beispiel Virtuelle Funktion}}
+		\lstinputlisting{../Code_Samples/Klassen/Beispiel_V5/main.cpp}
+		\label{fig:36}
+
+
+\end{figure}
+
+
+\subsubsection{Mehrfache Vererbung}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.65]{../Grafiken/Mehrfache_Vererbung.png}
+	\caption{Mehrfache Vererbung}
+	\label{fig:37}
+\end{figure}
 \newpage
 
 % Inline Methoden
 
 % Const Methoden
 \section{Operatoren Überladen}
-\section{Dynamische Speicher Objekte}
 \section{Fehlerbehandlung}
 \section{Eingabe- und Ausgabestreams}
 
@@ -904,6 +1024,7 @@ TODO...
     \acro{RAM}[RAM]{random-access memory}
     \acro{RTOS}[RTOS]{Real Time Operating System}
     \acro{OS}[OS]{Operating System}
+    \acro{VFT}[VTF]{irtual Funktion Table}
 \end{acronym}
 
 
