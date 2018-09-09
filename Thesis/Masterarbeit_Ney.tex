@@ -964,7 +964,7 @@ Um nun zu Überprüfen wie sich virtuelle Funktionen auf den Speicherverbrauch u
 	% Verweis im Text mittels \ref{tbl:beispieltabelle}
 \end{table}
 
-Die Verwendung von vielen virtuellen Funktionen wirkt sich dadurch extrem negativ auf die Laufzeit des Programmes aus da bei jedem Funktionsaufruf einer virtuellen Funktion die Tabelle durchsucht werden muss und diese auch beim Anlegen eines solchen Objektes zuerst erzeugt werden muss. Der genaue Ovehead hängt natürlich von der Größe der VFT Tabelle ab.\newline \newline Ein Beispiel soll noch einmal verdeutlichen warum die VFT Tabelle benötigt wird und warum der Compiler keine statische Bindung der Funktion \textit{send\_byte} zur Übersetzungszeit durchführen kann. Im nachfolgenden Beispiel wird ein Objekt \textit{ser} vom Typ \textit{Serial} angelegt. Zusätzlich wurde eine Funktion \textit{send} implementiert die ein Zeichen auf der verwendeten Schnittelle ausgibt. Die Funktion benötigt dafür einen Parameter welcher vom Typ \textit{Com} ist um die Funktion allgemein zu halten. Somit kann die Funktion für alle Objekte verwendet werden welche von der Basisklasse \textit{Com} erben und ist unabhängig von der eigentlichen Schnittelle (I2C, SPI oder UART). Darin besteht auch jetzt das Problem da die Funktion \textit{send} ohne Hilfe der VFT nicht weiß welche \textit{send\_byte} Funktion verwendet werden soll. Dies ist auch der Grund warum sich der Zeiger welcher auf die VFT Tabelle zeigt auch immer in der Basisklasse befinden muss was wir vorher mit \textit{sizeof(Serial)} auch herausgefunden haben.
+Die Verwendung von vielen virtuellen Funktionen wirkt sich dadurch extrem negativ auf die Laufzeit des Programmes aus da bei jedem Funktionsaufruf einer virtuellen Funktion die Tabelle durchsucht werden muss und diese auch beim Anlegen eines solchen Objektes zuerst erzeugt werden muss. Der genaue Ovehead hängt natürlich von der Größe der VFT Tabelle ab.\newline \newline Ein Beispiel soll noch einmal verdeutlichen warum die VFT Tabelle benötigt wird und warum der Compiler keine statische Bindung der Funktion \textit{send\_byte} zur Übersetzungszeit durchführen kann. Im nachfolgenden Beispiel wird ein Objekt \textit{ser} vom Typ \textit{Serial} angelegt. Zusätzlich wurde eine Funktion \textit{send} implementiert die ein Zeichen auf der verwendeten Schnittelle ausgibt. Die Funktion benötigt dafür einen Parameter welcher vom Typ \textit{Com} ist um die Funktion allgemein zu halten. Somit kann die Funktion für alle Objekte verwendet werden welche von der Basisklasse \textit{Com} erben und ist unabhängig von der eigentlichen Schnittelle (I2C, SPI oder UART). Darin besteht auch jetzt das Problem da die Funktion \textit{send} ohne Hilfe der VFT nicht weiß welche \textit{send\_byte} Funktion verwendet werden soll. Dies ist auch der Grund warum sich der Zeiger welcher auf die VFT Tabelle zeigt auch immer in der Basisklasse befinden muss was wir vorher mit \textit{sizeof(Serial)} auch herausgefunden haben.\newline
 
 \begin{figure}[!htb]
 
@@ -977,18 +977,27 @@ Die Verwendung von vielen virtuellen Funktionen wirkt sich dadurch extrem negati
 
 
 \subsubsection{Mehrfache Vererbung}
+
+Bei einer mehrfachen Vererbung erbt eine Klasse von mehr als einer Basisklasse. Abbildung 28 zeigt ein mögliches Konstrukt einer mehrfachen Vererbung. Gegenüber anderen objektorientierten Sprachen ist eine mehrfache Vererbung in C++ erlaubt, sollte jedoch mit Vorsicht verwendet werden weil man sich seine Modularisierung komplett zerstören kann wenn man nicht richtig aufpasst. Der Overhead hält sich noch relativ in Grenzen da der \textit{this} Zeiger gelegentlich angepasst werden muss wenn eine Methode aus einer Basisklasse aufgerufen wird. Der Compiler erzeugt eine sogenannte \textit{thunk} Methode welche den \textit{this} Zeiger adaptiert. Noch komplizierter wird es wenn die Basisklasse virtuelle Methoden vorweist oder wenn es Methoden mit der gleichen Signatur in mehreren Basisklassen gibt. Moderen Compiler lösen diese Probleme sehr elegant jedoch muss man immer daran denken dass dies nicht ohne zusätzlichen Overhead möglich ist. Auch muss man sich zusätzliche Gedanken machen in welcher Reihenfolge die Konstruktoren der Basisklassen aufgerufen werden man eine Klasse erzeugt welche von mehreren Basisklassen erbt. \newpage
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.65]{../Grafiken/Mehrfache_Vererbung.png}
 	\caption{Mehrfache Vererbung}
 	\label{fig:37}
 \end{figure}
+
+Um zu verdeutlichen welche Auswirkungen ein Konstrukt wie in Abbildung 28 dargestellt auf die Größe der Serial Klasse auswirkt  analysieren wir die Größe erneut mit \textit{sizeof}. Das Ergebnis von \textit{sizeof(Serial)} ergibt nun 28 Byte was ein Overhead von 8 Byte gegenüber der Version mit nur einer Basisklasse. Die 8 Byte setzen sich aus einer zusätzlichen Variable (4 Byte) welche in der zweiten Basisklasse definiert wurde und einem Zeiger auf eine VFT Tabelle welche sich nun auch in \textit{Serial} Klasse befindet. Schlussfolgernd kann man sagen dass mehrfache Vererbung in Kombination mit vielen virtuellen Methoden zu einem hohen Overhead führt und somit in embedded Projekten nicht zur Routine werden soll.
+
+\subsection{Fazit}
+Das verwenden von Klassen und den dazugehörigen Konzepten wie Konstruktoren oder Vererbung kann definitiv ein Mehrwert für ein Projekt darstellen, da man oftmals eine besser Modularisierung erlangt und die Wartbarkeit erhöht. Auch der Overhead ist oftmals nicht höher als bei einer äquivalenten C Implementierung wenn man auf gewisse Punkte achtet. Bei der Verwendung von virtuellen Methoden und mehrfacher Vererbung sollten bei jedem embedded Entwickler die Alarmglocken läuten und man muss sich Überlegen ob man mit dem Overhead leben kann wenn der Vorteil der dadurch entsteht überwiegt. Jedoch muss man ganz klar sagen dass eine Implementierung in C++ viel mehr wissen und Knowhow von einem embedded Entwickler fordert als eine reine funktionale Implementierung in C.
+
 \newpage
 
 % Inline Methoden
 
 % Const Methoden
 \section{Operatoren Überladen}
+
 \section{Fehlerbehandlung}
 \section{Eingabe- und Ausgabestreams}
 
