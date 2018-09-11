@@ -618,7 +618,7 @@ Medicine}}{}
     dass die abgegebene Version jener im Uploadtoolasas
     entspricht.\grqq\vspace{4\baselineskip}
 
-  \hspace{0.57\linewidth}\includegraphics[scale=0.3]{img/signature.png}
+  \hspace{0.66\linewidth}\includegraphics[scale=0.3]{img/signature.png}
   \newline
   \noindent \@place, \today\hspace{0.4\linewidth}Unterschrift
  
@@ -647,10 +647,6 @@ Medicine}}{}
   \fi
 \fi
 
-\ifx\@acknowledgements\@empty
-\else\clearpage
-  \chapter*{Danksagung}\@acknowledgements
-\fi
 
 \clearpage
 \tableofcontents

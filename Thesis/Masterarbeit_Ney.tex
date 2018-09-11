@@ -938,7 +938,7 @@ Wie in Abbildung 27 ersichtlich besteht nun das Problem das man zur Laufzeit ein
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.65]{../Grafiken/Virtuelle_Funktionen.png}
-	\caption{Einfache Vererbung}
+	\caption{Vererbung mit virtuellen Methoden}
 	\label{fig:35}
 \end{figure}
 
@@ -996,10 +996,68 @@ Das verwenden von Klassen und den dazugehörigen Konzepten wie Konstruktoren ode
 % Inline Methoden
 
 % Const Methoden
+\section{Fehlerbehandlung}
+Fehlerbehandlung mittels \textit{try, catch} ist in embedded Projekten noch sehr exotisch da ein relativ hoher Overhead im Fehlerfall einstehen kann. Jedoch hat diese Art von Fehlerbehandlung einige Vorteile welche hier erläutert werden sollen. Braucht man eine sehr performante Fehlerbehandlung welche sich über mehrere Softwareebenen erstreckt kann die Anwendung der \textit{try, catch} Methode durchaus sinnvoll sein. Somit kann man auch Fehler welche in Konstruktoren auftreten behandeln was aufgrund des fehlenden Rückgabelwertes bei Konstruktoren nicht über die übliche Art funktioniert. \newline\newline Um den Overhead von \textit{try, catch} zu analysieren implementieren wir einmal eine Fehlerbehandlung mittels Rückgabelwert und der \textit{try, catch} Methode um beide Versionen auf Performance und Speicher Overhead zu testen. In der \textit{set\_baudrate} Methode soll eine Fehlerüberprüfung implementiert werden um ein falsches setzen der Baudrate zu detektieren. 
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Try, Catch Methode}}
+		\lstinputlisting{../Code_Samples/Fehlerbehandlung/Exceptions/serial.h}
+		\label{fig:38}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Return Methode}}
+		\lstinputlisting{../Code_Samples/Fehlerbehandlung/Return_Value/serial.h}
+		\label{fig:39}
+	\end{subfigure}
+\end{figure}
+
+ In der \textit{try, catch} Version ist der Rückgabe Typ der Methode \textit{void} und mittels \textit{throw} kann ein Fehler eines beliebigen Typs geworfen werden welcher dann außerhalb im \textit{try, catch} Block aufgefangen werden muss. In unserer Implementierung wird lediglich ein Fehler vom Typ \textit{int} geworfen. In der Praxis werden häufig eigene Fehler Klassen implementiert welche im Fehlerfall detaillierte Informationen über den Fehler ausgeben oder spezifische Fehler Routinen ausführen. In der klassischen Version mittels Rückgabelwert liefert die Methode (-1) im Fehlerfall und (1) wenn die Baudrate auf einen gültigen Wert gesetzt wurde. In diesem Fall muss das Hauptprogramm den Rückgabelwert der der \textit{set\_baudrate} Methode jedes Mal überprüfen um einen möglichen Fehler zu detektieren. Das nachfolgenden Beispiel zeigt wie eine Fehlerbehandlung von beiden Versionen im Hauptprogramm ausschauen würde. \newpage
+ 
+ \begin{figure}[!htb]
+ 	\begin{subfigure}[b]{0.5\textwidth}
+ 		\lstset{language=C++,caption={Try, Catch Methode}}
+ 		\lstinputlisting{../Code_Samples/Fehlerbehandlung/Exceptions/main.cpp}
+ 		\label{fig:40}
+ 	\end{subfigure}
+ 	%
+ 	\begin{subfigure}[b]{0.5\textwidth}
+ 		\lstset{language=C++,caption={Return Methode}}
+ 		\lstinputlisting{../Code_Samples/Fehlerbehandlung/Return_Value/main.cpp}
+ 		\label{fig:41}
+ 	\end{subfigure}
+ \end{figure}
+
+Die beiden Programme tun exakt das Gleiche unterscheiden sich jedoch in Performance und ROM Größe. Um die Performance zu analysieren wurden die Assembler Instruktion ab Zeile 7 bis zum Programm Ende für den Fehlerfall und den nicht Fehlerfall gezählt. Hierfür wurde das Programm auf eine Mikrocontroller gespielt und im Debug Modus die Instruktionen zwischen 2 Brekpoints gezählt. Mit diesem Test bekommt man ein ungefähres Gefühl wie viel Overhead die jeweilige Fehlerbehandlungs- Methode in beiden Fällen hat. Der genaue Performance- Overhead hängt natürlich stark von der verwendeten CPU und der Optimierungstuffe des Compilers ab. Tabelle 6 zeigt das Ergebnis dieses Testes.
+
+\begin{table}[!htb]
+	\centering
+	\begin{tabular}{| l | c | c |}
+		\hline
+		\textbf{Methode}   & \textbf{Fehlerfall} & \textbf{Nicht Fehlerfall}   \\ \hline
+		try, catch       & 550	& 18		    \\ \hline
+		return value           & 25 & 26	    		\\ \hline
+		
+	\end{tabular}
+	
+	\caption{Performance Fehlerbehandlung}
+	\label{tbl:6}
+	% Verweis im Text mittels \ref{tbl:beispieltabelle}
+\end{table}
+ Wie in der Tabelle 6 ersichtlich ist die \textit{try, catch} Methode sogar um 8 Instruktionen schneller als die herkömmliche Methode mit Rückgabelwert wenn kein Fehler auftritt. Dieser kleiner Overhead liegt hauptsächlich an der Überprüfung des Rückgabelwertes welcher bei der return Methode durchgeführt werden muss. Dies ist möglich da moderne C++ Compiler das \textit{zero-cost Model} bei der \textit{try, catch} Methode umsetzen. Dies besagt das im nicht Fehlerfall kein zusätzlicher Code ausgeführt werden soll. Jedoch erkennt man im Fehlerfall warum die \textit{try, catch} Methode in embedded Projekten noch nicht sehr Beliebt ist. Im Fehlerfall ergibt sich bei der \textit{try, catch} Methode nämlich ein Overhead von ungefähr 500 Instruktionen was enorm ist. Dieser Overhead entsteht durch eine zusätzliche Exception- Tabelle die zu Laufzeit erstellt und gewartet werden muss. Diese Tabelle beinhaltet die Information zu welchem catch Block im Fehlerfall gesprungen werden muss und wir bei jedem Eintritt in ein try Block adaptiert. 
+
+\newpage
+\subsection{Fazit}
+Bei kleiner Mikrocontrollern mach die \textit{try, catch} Fehlerbehandlung absolut keinen Sinn da der ROM Overhead einfach zu Groß ist. Auf Plattformen mit leistungsstärkeren CPU's in Kombination mit genügend ROM Speicher kann die Verwendung einer solchen Fehlerbehandlungs- Methode durchaus eine Überlegung Wert sein. Die geringe Performance Verbesserung bei der \textit{try, catch} Methode kann bei der Berechnung mathematischer Probleme die unter Umständen viel Zeit in Anspruch nehmen kann sogar einen großen zeitlichen Unterschied in der Berechnungszeit bewirken. Schlussfolgernd kann man sagen dass die konventionelle Methode mit Überprüfung des Rückgabelwertes für die meisten Projekte vollkommen ausreichend ist und so schnell nicht aussterben wird.
+
+\newpage
 \section{Operatoren Überladen}
 
-\section{Fehlerbehandlung}
-\section{Eingabe- und Ausgabestreams}
+\newpage
+
+\chapter{Schlussfolgerung}
+TODO...
 
 
 
@@ -1007,8 +1065,29 @@ Das verwenden von Klassen und den dazugehörigen Konzepten wie Konstruktoren ode
 % Hier beginnen die Verzeichnisse.
 %
 \clearpage
-\ifthenelse{\equal{\FHTWCitationType}{HARVARD}}{}{\bibliographystyle{gerabbrv}}
-\bibliography{Literatur}
+\begin{thebibliography}{9}
+	
+\bibitem{C von A bis Z}
+\href{C von A bis Z}{C von A bis Z (Jürgen Wolf) - ISBN 978-3-8362-1411-7}
+
+\bibitem{Grundkurs C++}
+\href{Grundkurs C++}{Grundkurs C++ (Jürgen Wolf) - ISBN 978-3-8362-3895-3}
+
+\bibitem{C und C++ für Embedded Systems (Friedrich Bollow, Matthias Homann, Klais-Peter Köhn)}
+\href{C und C++ für Embedded Systems}{C und C++ für Embedded Systems (Friedrich Bollow, Matthias Homann, Klais-Peter Köhn)  ISBN 978-3-8266-1764-5}
+
+\bibitem{Effective Modern C++ }
+\href{Effective Modern C++ }{Effective Modern C++  (Scott Meyers) - ISBN 978-1-4919-0399-5}
+
+\bibitem{C++ }
+\href{dd}{C++ In der Embedded-Entwicklung (Günter Obiltschnig)}
+
+\bibitem{Resource Acquisition Is Initialization (Wikipedia) }
+\href{dd}{Resource Acquisition Is Initialization (Wikipedia) \newline https://en.wikipedia.org/wiki/Resource\_acquisition\_is\_initialization}
+	
+
+		
+\end{thebibliography}
 \clearpage
 
 % Das Abbildungsverzeichnis
@@ -1020,8 +1099,8 @@ Das verwenden von Klassen und den dazugehörigen Konzepten wie Konstruktoren ode
 \clearpage
 
 % Das Quellcodeverzeichnis
-\listofcode
-\clearpage
+% \listofcode
+% \clearpage
 
 \phantomsection
 \addcontentsline{toc}{chapter}{\listacroname}
@@ -1033,7 +1112,7 @@ Das verwenden von Klassen und den dazugehörigen Konzepten wie Konstruktoren ode
     \acro{RAM}[RAM]{random-access memory}
     \acro{RTOS}[RTOS]{Real Time Operating System}
     \acro{OS}[OS]{Operating System}
-    \acro{VFT}[VTF]{irtual Funktion Table}
+    \acro{VFT}[VTF]{Virtual Funktion Table}
 \end{acronym}
 
 
