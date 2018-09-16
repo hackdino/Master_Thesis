@@ -84,9 +84,11 @@
 In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren einiges getan. Moderne Programmiersprachen wie C/C++ haben sich in der embedded Entwicklung etabliert und aufwendiges programmieren in Assembler sollte nur noch in wenigen Fällen von Nöten sein. Diese Arbeit beschäftigt sich hauptsächlich mit der Frage, ob der Einsatz einer objektorientierten Programmiersprache auf Plattformen mit nur wenigen kBytes an Flash Speicher sinnvoll ist und welchen Mehrwert diese für die Embedded Entwicklung haben könnte. \newline \newline Hierbei sollen vor allem die gängigsten Konzepte (Klassen, Templates, etc.) der objektorientierten Sprache analysiert werden, um Solide Richtwerte über Performance und Speicherverbrauch geben zu können. Dazu soll der kompilierte Code analysiert und diverse Benchmark Tests durchgeführt werden. Zusätzlich wird der Vergleich mit einer klassischen funktionalen Programmiersprache dargestellt. \newline \newline Als Referenz Programmiersprache wird C/C++ in Verbindung mit der ARM Cortex-M Architektur verwendet, da diese Kombination sehr interessant für stromsparende und kleinere IoT Projekte ist und sich wahrscheinlich in Zukunft durchsetzen wird. Am Anfang wird auch eine State-Of-the-art Analyse über die momentan verfügbaren ARM C++ Compiler durchgeführt um auflisten zu können welche Versionen und Erweiterungen von C++ unterstützt werden.
 
 }
-\schlagworte{Objektorientiertes Programmieren, C/C++, Embedded Software, ARM Cortex-M}
-\outline{\blindtext}
-\keywords{Keyword1, Keyword2, Keyword3, Keyword4}
+\schlagworte{Objektorientiertes Programmieren, C/C++, Embedded Software, ARM Cortex}
+
+
+\outline{Much has happened in the development of embedded systems in recent years. Modern programming languages such as C/C ++ have established themselves in the embedded development and complex programming in assembler should only be necessary in a few cases. This thesis mainly deals with the question of whether the use of an object-oriented programming language on platforms with only a few kbytes of flash memory makes sense and what advantages this brings to the development of embedded systems. \newline \newline In particular, the most common concepts (classes, templates, etc.) of the object-oriented language should be analyzed in order to make a statement about performance and memory consumption. For this purpose, the compiled code is analyzed and various benchmark tests are performed. In addition, the comparison with a classical functional programming language is presented. \newline \newline C/C++ is used as reference programming language in conjunction with the ARM Cortex-M architecture. This combination is very interesting for small and low-power IoT projects and is likely to prevail in the future. At the beginning, a state-of-the-art analysis is performed to list all available C/C++ compilers and to check which C/C++ extensions and versions are supported.}
+\keywords{Object-oriented programming, C/C++, Embedded Software, ARM Cortex}
 \acknowledgements{\blindtext}
 
 \begin{document}
@@ -171,24 +173,26 @@ Dieses Kapitel soll die Hardware Features und die gängigsten CPU Architekturen 
 \subsection{GNU Arm Embedded Toolchain}
 \subsection{IAR Embedded Workbench}
 \subsection{ARM Compiler}
+\newpage
 
 
 \chapter{Embedded C++}
-\section{Überblick}
 In diesem Kapitel werden verschiedene Konzepte von C++ näher analysiert um klare Aussagen über Speicherverbrauch und Performance liefern zu können. Es soll zugleich als eine Art Guideline für Embedded Programmierer dienen um C++ effizient einsetzen zu können. \newline 
+\section{Einleitung}
 
-Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Compiler, Linker und Co. auch noch viele nützliche Tools zur Analyse mitliefert. Verschieden Tools die in den nachfolgenden Kapiteln zum Einsatz kommen werden in Tabelle \ref{tbl:analystools} aufgelistet.
+
+Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Compiler, Linker und Co. auch noch viele nützliche Tools zur Analyse mitliefert. Diverse Tools welche in den nachfolgenden Kapiteln zum Einsatz kommen sollen in Tabelle \ref{tbl:analystools} erläutert werden.
 
 \begin{table}[!htb]
 	\centering
 	\begin{tabular}{| l | c | r |}
 		\hline
 		\textbf{Tool}  & \textbf{Beschreibung} \\ \hline
-		arm-none-eabi-g++           & C++ Compiler (Präprozessor , Kompiler, Linker) \\ \hline
-		arm-none-eabi-gcc       	& C	  Compiler (Präprozessor , Kompiler, Linker) \\ \hline
+		arm-none-eabi-g++           & C++ Compiler (Präprozessor, Compiler, Linker) \\ \hline
+		arm-none-eabi-gcc       	& C	  Compiler (Präprozessor, Compiler, Linker) \\ \hline
 		arm-mone-eabi-nm        	& Listet Symbole aus Objekt Dateien \\ \hline
 		arm-none-eabi-objdump		& Zur erweiterten Analyse von Objekt Dateien \\ \hline
-		arm-none-eabi-size			& Zeigt Größe der verschieden Link Segmente (Text, Data, BSS) \\ \hline
+		arm-none-eabi-size			& Zeigt Größe der verschieden Link Sektionen (Text, Data, BSS) \\ \hline
 	\end{tabular}
 	
 	\caption{Analyse Tools}
@@ -196,6 +200,8 @@ Die GNU ARM Embbedded Toolchain wird für diese Tests verwendet da Sie neben Com
 	% Verweis im Text mittels \ref{tbl:beispieltabelle}
 	
 \end{table}
+
+Die Resultate über Performance und Speicher Overhead welche in den nachfolgenden Kapiteln ermittelt werden sind keine in Stein gemeißelten Werte und sollen nur einen ungefähren Überblick über den zu erwarteten Overhead geben. Die Ergebnisse können je nach der verwendeten Toolchain oder CPU etwas variieren, sollten jedoch für die meisten Anwendungsfälle gültig sein.
 
 
 \newpage
@@ -397,11 +403,11 @@ Die Standardbibliothek is ein fester Bestandteil von C++ und wird von der ISO Or
 \subsubsection{Container-Klassen}
 Container-Klassen sind generische Klassen welche andere Objekte und Datentypen speichern und verwalten können. Diese sind meistens als Template-Klassen implementiert wodurch man diese für die meisten Datentypen benutzen kann. Die bekanntestes Container sind \textit{std::vector} und \textit{std:array} welche auch in den nachfolgenden Kapiteln analysiert werden.
 \subsubsection{Iteratoren}
-An sich sind Iteratoren nichts anderes als intelligente Zeiger welche benutzt werden um durch die Elemente eines Container zu iterieren. Iteratoren sind reine Zugriffsobjekte und stellen die Schnittstelle für Algorithmen in C++ dar.
+An sich sind Iteratoren nichts anderes als intelligente Zeiger welche benutzt werden um durch die Elemente eines Containers zu iterieren. Iteratoren sind reine Zugriffsobjekte und stellen die Schnittstelle für Algorithmen in C++ dar.
 \subsubsection{Algorithmen}
 Mit Algorithmen kann man Manipulationen an Container vornehmen. Diese sind Container unabhängig implementiert und benutzen Iteratoren um auf die Container Elemente zuzugreifen. Der \textit{std::for\_each} Algorithmus ist einer der bekanntesten mit dem man auf alle Elemente eines Containers Zugriff bekommt.
 \subsubsection{Die Standard Bibliothek in embedded Projekten}
-Die Bibliothek ist bekannt dafür dass diese eigenständig viel Speicher zur Laufzeit am Heap oder Stack alloziert. Zudem benötigt diese doch relativ viel Speicher womit sie für sehr kleine Microkontroller nicht in frage kommt. Jedoch sollen in den nächsten Kapiteln einige interessante Elemente analysiert werden.
+Die Bibliothek ist bekannt dafür dass diese eigenständig viel Speicher zur Laufzeit am Heap oder Stack alloziert. Zudem benötigt diese doch relativ viel Speicher womit sie für sehr kleine Microkontroller nicht in Frage kommt. Jedoch sollen in den nächsten Kapiteln einige interessante Elemente analysiert werden.
 \newpage
 
 \subsection{Arrays}
@@ -681,7 +687,7 @@ Die Analyse zeigt dass Referenzen keinesfalls einen Overhead an Speicher mit sic
 	\begin{subfigure}[b]{0.5\textwidth}
 		\begin{lstlisting}[gobble=6, title={Analyse Zeiger Beispiel}, language=bash, numbers=none]
 		$ arm-none-eabi-g++ -c -Os main.cpp
-		$ arm-none-eabi-size main
+		$ arm-none-eabi-size main.o
 		...
 		text    data     bss
 		163        0       0
@@ -1053,6 +1059,49 @@ Bei kleiner Mikrocontrollern mach die \textit{try, catch} Fehlerbehandlung absol
 
 \newpage
 \section{Operatoren Überladen}
+Bei der Verwendung von Klassen welche verschiedene Datentypen beinhalten müssen Operatoren wie \textit{+, +=, >>} überschrieben werden damit man diese sinnvoll einsetzten kann. Ist ein Operator in Bezug auf eine bestimmte Klasse sinnvoll sollte man diesen stets überschreiben um die gewünschte Funktionalität zu gewährleisten. Überladene Operatoren führen dazu dass der Code wesentlich übersichtlicher wirkt als müsste man eine eigene Operator Funktion aufrufen. Das nachfolgende Beispiel zeigt wie man den Addier- Operator überschreiben kann und wie eine Implementierung ohne überschreiben des Operators möglich wäre. Direkt ersichtlich ist das der Aufruf in Zeile 23 wesentlich übersichtlicher Wirkt wenn der Operator überladen wurde. Wenn man den \textit{+} Operator überschrieben hat sollte man auch immer den zugehörigen \textit{+=} Operator überschreiben um blöde Fehler im Vorhinein zu vermeiden. Implementiert man in C++ eine Klasse welche eine Ausgabe oder Eingabe erfordert sollte man wenn möglich den \textit{>>} und \textit{<<} Operator überschreiben. 
+
+ \begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Operator Überladen}}
+		\lstinputlisting{../Code_Samples/Operatoren_Ueberladen/new/main.cpp}
+		\label{fig:44}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Addier Methode}}
+		\lstinputlisting{../Code_Samples/Operatoren_Ueberladen/old/main.cpp}
+		\label{fig:45}
+	\end{subfigure}
+\end{figure}
+\newpage
+
+Das überladen von Operatoren erzeugt auch kein Overhead an Performance oder ROM Größe. Der Compiler generiert für beide Version exakt das gleiche Ergebnis womit ein Unterschied nur in der Lesbarkeit und Wartbarkeit des Codes besteht.
+
+\begin{figure}[!htb]
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse Operator Überladen}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -Os main.cpp
+		$ arm-none-eabi-size main.o
+		...
+		text    data     bss
+		16        0       0
+		...
+		\end{lstlisting}
+	\end{subfigure}
+	%
+	\begin{subfigure}[b]{0.5\textwidth}
+		\begin{lstlisting}[gobble=6, title={Analyse Addier Mehode}, language=bash, numbers=none]
+		$ arm-none-eabi-g++ -c -Os main.c
+		$ arm-none-eabi-size main.o
+		...
+		text    data     bss
+		16        0       0
+		...
+		\end{lstlisting}
+	\end{subfigure}
+\end{figure}
+
 
 \newpage
 
