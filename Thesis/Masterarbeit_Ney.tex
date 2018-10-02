@@ -157,9 +157,18 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 Dieses Kapitel soll einen Überblick über aktuelle Mikrocontroller Architekturen und dessen Tools zur Entwicklung darstellen. Die Auswahl des richtigen Mikrocontrollers für ein Projekt ist eines der wichtigsten Schritte was einiges an Zeit und Recherche beansprucht. Auch das Auswählen der richtigen Toolchain oder die Frage ob ein RTOS oder OS zum Einsatz kommen soll wird immer wichtiger und hängt stark davon ab für welchen Mikrocontroller oder welche Architektur man sich entschieden hat. Stellt man während der Projektphase fest das der verwendete Mikrocontroller ungeeignet ist oder bestimmte Hardware Features fehlen, ist das meist ein großes Risiko welches den Erfolg des Projektes beeinflussen kann.  
 \section{Mikrocontroller Hardware Analyse}
 Dieses Kapitel soll die Hardware Features und die gängigsten CPU Architekturen näher beschreiben. Der Trend neigt dazu dass immer mehr Funktionalität welche früher als externe Peripherie an den Mikrocontroller angeschlossen werden musste in diesen integriert wird. Dies führt dazu dass moderne Mikrocontroller immer komplexer werden was die Verwendung von Softwarebibliotheken welche die Hardware ansprechen immer notwendiger macht. Auch Codegeneratoren mit denen man die komplexe Hardware über ein User Interface komfortabel konfigurieren kann finden immer mehr Einzug in die Entwicklungsumgebungen der verschiedenen Halbleiter Hersteller. Dieses Phänomen kann man gut an der Seitenanzahl vom Datenblatt gängiger Mikrocontroller erkennen. Hatten frühere 8 Bit Mikrocontroller noch 500 oder weniger Seiten findet man heute kaum noch ein Datenblatt mit weniger als 2000 Seiten. Auch die Energieeffizienz scheint eine immer wichtigere Rolle zu spielen was durch den steigernden Anteil von mobilen Geräten zu erklären ist. 
+\newpage
 \subsection{8bit vs 32bit CPU}
+In den letzten Jahren hat sich die Anzahl an verfügbaren 32 Bit Mikrocontrollern (MCU's) erheblich erhöht was vor allem durch die zunehmende Popularität der ARM Cortex Architektur zu erklären ist. Mittlerweile können kleinere 32 Bit MCU's auch preislich mit 8 Bit MCU's mithalten. In diesem low-budget Segment hat die Cortex-M Architektur in den letzten Jahren extrem an Popularität gewonnen. Jedoch ist die 8 Bit Architektur welche ihren Ursprung in den 1970er Jahren hatte keine Aussterbende Technologie und hat durchaus noch ein Berechtigungsradsein. Einige Halbleiter Herstellern erweitern ihr 8 Bit Portfolio sogar noch um den heutigen Anforderungen besser Gerecht zu werden. Bei der Suche nach einer geeigneter Architektur darf man sich nicht die Frage stellen welche Architektur besser ist, sondern welche Architektur besser zu den Anforderungen des jeweiligen Projektes passt. Dieses Kapitel wird einige Richtlinien aufstellen an denen man festhalten kann wenn es um die Auswahl der richtigen Architektur geht.
 
-\subsection{Stromverbrauch und Effizienz}
+\subsubsection{System Größe und Peripherie}
+In den meisten Fällen kennt man schon die ungefähre Größe an benötigtem Flash Speicher (Code Größe) während des Auswahlprozesses da man meist über eine Referenz Implementierung verfügt. Auch die benötigte Peripherie welche für die Umsetzung des Projektes erforderlich ist muss im Vorhinein bekannt sein. Diese 2 Kriterien sind in vielen Fällen schon ausreichend um eine geeignete Auswahl zu treffen. Werden weniger als 16 kByte an Code Größe benötigt und keine große Anforderungen an Peripherie Module wie Timer, I2C oder SPI vorausgesetzt empfiehlt sich die 8 Bit Architektur. Werden mehr als 64 kByte an Flash Speicher benötigt oder braucht man komplexe Peripherie sollte die 32 Bit Architektur bevorzugt werden. Diese Begrenzung ergibt sich schon alleine dadurch das 8 Bit MCU's welche mehr als 32 kByte an Flash Speicher aufweisen relativ rar sind und meist Peripherie beinhalten welche nicht so komplex ist, jedoch für viele Anwendung völlig ausreichend sind. Befindet man sich genau zwischen diesen 2 Bereichen (16-64 kByte Code Größe) und hat keine spezielle Anforderungen an Peripherie muss man noch weitere Kriterien berücksichtigen um die geeignete Auswahl zu treffen.
+\subsubsection{Chipgehäuse}
+Einige Halbleiter Hersteller haben 8 Bit MCU's im Sortiment welche eine extrem kleine Chip Fläche aufweisen mit vergleichsweise wenig IO Pins. Solche Chips bieten sich für sehr kleine low-budget Applikationen an für welche nur sehr wenig Funktionalität benötigt wird. Solche MCU's findet man häufig in integrierten Sensoren welche einfache Messungen durchführen und die Ergebnisse dann über UART oder I2C an einen Host Controller übertragen. Solche Chips bieten oft nur einige kBytes an Flash Speicher mit sehr wenig Peripherie und passen daheer in Chipgehäuse welche nicht mehr als 2 x 2 Millimeter beanspruchen. 32 Bit MCU's mit so kleinen Dimensionen sind kaum erhältlich. 
+\subsubsection{Code und RAM Effizienz}
+\subsubsection{Zeiger}
+\subsubsection{Stromverbrauch}
+\subsubsection{Fazit}
 \subsection{MCU Peripherie}
 \subsection{Sicherheits- Features}
 \section{Work-Flow und Tools in der embedded Entwicklung}
@@ -1163,6 +1172,7 @@ TODO...
     \acro{RTOS}[RTOS]{Real Time Operating System}
     \acro{OS}[OS]{Operating System}
     \acro{VFT}[VTF]{Virtual Funktion Table}
+    \acro{MCU}[MCU]{microcontroller unit}
 \end{acronym}
 
 
