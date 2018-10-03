@@ -159,14 +159,36 @@ Dieses Kapitel soll einen Überblick über aktuelle Mikrocontroller Architekture
 Dieses Kapitel soll die Hardware Features und die gängigsten CPU Architekturen näher beschreiben. Der Trend neigt dazu dass immer mehr Funktionalität welche früher als externe Peripherie an den Mikrocontroller angeschlossen werden musste in diesen integriert wird. Dies führt dazu dass moderne Mikrocontroller immer komplexer werden was die Verwendung von Softwarebibliotheken welche die Hardware ansprechen immer notwendiger macht. Auch Codegeneratoren mit denen man die komplexe Hardware über ein User Interface komfortabel konfigurieren kann finden immer mehr Einzug in die Entwicklungsumgebungen der verschiedenen Halbleiter Hersteller. Dieses Phänomen kann man gut an der Seitenanzahl vom Datenblatt gängiger Mikrocontroller erkennen. Hatten frühere 8 Bit Mikrocontroller noch 500 oder weniger Seiten findet man heute kaum noch ein Datenblatt mit weniger als 2000 Seiten. Auch die Energieeffizienz scheint eine immer wichtigere Rolle zu spielen was durch den steigernden Anteil von mobilen Geräten zu erklären ist. 
 \newpage
 \subsection{8bit vs 32bit CPU}
-In den letzten Jahren hat sich die Anzahl an verfügbaren 32 Bit Mikrocontrollern (MCU's) erheblich erhöht was vor allem durch die zunehmende Popularität der ARM Cortex Architektur zu erklären ist. Mittlerweile können kleinere 32 Bit MCU's auch preislich mit 8 Bit MCU's mithalten. In diesem low-budget Segment hat die Cortex-M Architektur in den letzten Jahren extrem an Popularität gewonnen. Jedoch ist die 8 Bit Architektur welche ihren Ursprung in den 1970er Jahren hatte keine Aussterbende Technologie und hat durchaus noch ein Berechtigungsradsein. Einige Halbleiter Herstellern erweitern ihr 8 Bit Portfolio sogar noch um den heutigen Anforderungen besser Gerecht zu werden. Bei der Suche nach einer geeigneter Architektur darf man sich nicht die Frage stellen welche Architektur besser ist, sondern welche Architektur besser zu den Anforderungen des jeweiligen Projektes passt. Dieses Kapitel wird einige Richtlinien aufstellen an denen man festhalten kann wenn es um die Auswahl der richtigen Architektur geht.
+In den letzten Jahren hat sich die Anzahl an verfügbaren 32 Bit Mikrocontrollern (MCU's) erheblich erhöht was vor allem durch die zunehmende Popularität der ARM Cortex Architektur zu erklären ist. Mittlerweile können kleinere 32 Bit MCU's auch preislich mit 8 Bit MCU's mithalten. In diesem low-budget Segment haben Controller der Cortex-M Famillie extrem an Popularität gewonnen. Jedoch ist die 8 Bit Architektur, welche ihren Ursprung in den 1970er Jahren hatte keine Aussterbende Technologie und hat durchaus noch ihr Berechtigungsradsein. Einige Halbleiter Herstellern erweitern ihr 8 Bit Portfolio sogar noch um den heutigen Anforderungen besser Gerecht zu werden. Bei der Suche nach einer geeigneter Architektur darf man sich nicht die Frage stellen welche Architektur besser ist, sondern welche Architektur besser zu den Anforderungen des jeweiligen Projektes passt. Dieses Kapitel wird einige Richtlinien aufstellen an denen man festhalten kann wenn es um die Auswahl der richtigen Architektur geht.
 
 \subsubsection{System Größe und Peripherie}
 In den meisten Fällen kennt man schon die ungefähre Größe an benötigtem Flash Speicher (Code Größe) während des Auswahlprozesses da man meist über eine Referenz Implementierung verfügt. Auch die benötigte Peripherie welche für die Umsetzung des Projektes erforderlich ist muss im Vorhinein bekannt sein. Diese 2 Kriterien sind in vielen Fällen schon ausreichend um eine geeignete Auswahl zu treffen. Werden weniger als 16 kByte an Code Größe benötigt und keine große Anforderungen an Peripherie Module wie Timer, I2C oder SPI vorausgesetzt empfiehlt sich die 8 Bit Architektur. Werden mehr als 64 kByte an Flash Speicher benötigt oder braucht man komplexe Peripherie sollte die 32 Bit Architektur bevorzugt werden. Diese Begrenzung ergibt sich schon alleine dadurch das 8 Bit MCU's welche mehr als 32 kByte an Flash Speicher aufweisen relativ rar sind und meist Peripherie beinhalten welche nicht so komplex ist, jedoch für viele Anwendung völlig ausreichend sind. Befindet man sich genau zwischen diesen 2 Bereichen (16-64 kByte Code Größe) und hat keine spezielle Anforderungen an Peripherie muss man noch weitere Kriterien berücksichtigen um die geeignete Auswahl zu treffen.
 \subsubsection{Chipgehäuse}
 Einige Halbleiter Hersteller haben 8 Bit MCU's im Sortiment welche eine extrem kleine Chip Fläche aufweisen mit vergleichsweise wenig IO Pins. Solche Chips bieten sich für sehr kleine low-budget Applikationen an für welche nur sehr wenig Funktionalität benötigt wird. Solche MCU's findet man häufig in integrierten Sensoren welche einfache Messungen durchführen und die Ergebnisse dann über UART oder I2C an einen Host Controller übertragen. Solche Chips bieten oft nur einige kBytes an Flash Speicher mit sehr wenig Peripherie und passen daheer in Chipgehäuse welche nicht mehr als 2 x 2 Millimeter beanspruchen. 32 Bit MCU's mit so kleinen Dimensionen sind kaum erhältlich. 
 \subsubsection{Code und RAM Effizienz}
-\subsubsection{Zeiger}
+Code und RAM Effizienz ist meist ein sehr heikles Thema wenn beide Architekturen miteinander verglichen werden. Die MCU Architektur sagt nichts über die Befehlsbreite der Instruktionen aus und beträgt bei 8 Bit CPU's meist 16 Bit. 32 Bit MCU's der Cortex-M Familie unterstützen den Thumb oder Thumb-2 Befehlssatz welcher 16 Bit und einige 32 Bit Instruktionen beinhaltet. Somit beeinflusst die Länge der Instruktionen die Code Effizienz kaum, jedoch sind 32 Bit Instruktionen oftmals viel mächtiger da Sie mehrere Bytes auf einmal verschieben können. Auch 32 Bit Mathematik Operationen können bei einer 32 Bit Architektur mit einer Instruktion erledigt werden wobei die 8 Bit Architektur hierfür mehrere Instruktionen benötigt. Somit ist die Code Effizienz bei der 32 Bit Architektur oftmals besser bei Mathematische Operationen oder bei Operationen wo viele Daten hin und her geschoben werden. \newline
+Bei der RAM Effizienz kann die 8 Bit Architektur etwas Punkten da hier der RAM Byte-weise organisiert ist. Bei der 32 Bit Architektur ist der RAM in Blöcke von jeweils 4 Byte organisiert. Datentypen wie \textit{uint16\_t} oder \textit{uin32\_t} benötigen aber ein bestimmte Anordnung womit es zu Lücken im RAM kommen kann. Das nachfolgende Beispiel zeigt eine Struktur welche eine Reihe von Daten beinhaltet. Damit man schnellen Zugriff auf die jeweiligen Variablen bekommt sollten Datentypen wie \textit{uint16\_t} an Adressen welche ein vielfaches von 2 sind beginnen und \textit{uint32\_t} Variablen an Adressen welche ein vielfachen von 4 sind beginnen. Wie in Abbildung 2 ersichtlich muss der Compiler gegebenenfalls Lücken auffüllen um diesen Anforderungen gerecht zu werden. Will man RAM Speicher sparen kann man bei den meisten Compiler dieses Verhalten abdrehen muss jedoch mit Performance Einbussen rechnen da nicht mehr so schnell auf die Variable zugegriffen werden kann.
+
+\begin{figure}[!htb]
+	\centering
+	\begin{subfigure}[b]{0.5\textwidth}
+		\lstset{language=C++,caption={Padding}, otherkeywords = {uint8_t, uint16_t, uint32_t}}
+		\lstinputlisting{../Code_Samples/Padding/main.c}
+		\label{lst:01}
+	\end{subfigure}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=1.3]{../Grafiken/padding.png}
+	\caption{Padding}
+	\label{fig:32}
+\end{figure}
+
+
+
+
+\subsubsection{Speicher Model}
 \subsubsection{Stromverbrauch}
 \subsubsection{Fazit}
 \subsection{MCU Peripherie}
