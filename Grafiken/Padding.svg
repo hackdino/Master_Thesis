@@ -27,7 +27,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
      inkscape:cx="158.30212"
-     inkscape:cy="616.87441"
+     inkscape:cy="536.06221"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -79,11 +79,13 @@
     <rect
        style="opacity:0.61000001;fill:#ffff00;fill-opacity:0;stroke:#ffff00;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect4491"
-       width="75.637276"
-       height="53.721176"
-       x="28.597837"
-       y="136.24602"
-       ry="2.2678576" />
+       width="93.544334"
+       height="26.994226"
+       x="14.298918"
+       y="152.14856"
+       ry="1.1395702"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <rect
        style="opacity:1;fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.5;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect4587"
@@ -304,15 +306,6 @@
        d="m 43.75074,157.90477 v 10.39434"
        id="path6390"
        inkscape:connector-curvature="0"
-       inkscape:export-xdpi="300"
-       inkscape:export-ydpi="300" />
-    <rect
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.06978226;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.13956454, 0.06978227;stroke-dashoffset:0"
-       id="rect6396"
-       width="7.4835467"
-       height="16.169806"
-       x="97.574867"
-       y="160.29164"
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300" />
   </g>
