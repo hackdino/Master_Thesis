@@ -87,7 +87,7 @@ In der Entwicklung von eingebetteten Systemen hat sich in den letzten Jahren ein
 \schlagworte{Objektorientiertes Programmieren, C/C++, Embedded Software, ARM Cortex}
 
 
-\outline{Much has happened in the development of embedded systems in recent years. Modern programming languages such as C/C ++ have established themselves in the embedded development and complex programming in assembler should only be necessary in a few cases. This thesis mainly deals with the question of whether the use of an object-oriented programming language on platforms with only a few kbytes of flash memory makes sense and what advantages this brings to the development of embedded systems. \newline \newline In particular, the most common concepts (classes, templates, etc.) of the object-oriented language should be analyzed in order to make a statement about performance and memory consumption. For this purpose, the compiled code is analyzed and various benchmark tests are performed. In addition, the comparison with a classical functional programming language is presented. \newline \newline C/C++ is used as reference programming language in conjunction with the ARM Cortex-M architecture. This combination is very interesting for small and low-power IoT projects and is likely to prevail in the future. At the beginning, a state-of-the-art analysis is performed to list all available C/C++ compilers and to check which C/C++ extensions and versions are supported.}
+\outline{Much has happened in the development of embedded systems in recent years. Modern programming languages such as C/C ++ have established themselves in the embedded development and complex programming in assembler should only be necessary in a few cases. This thesis mainly deals with the question of whether the use of an object-oriented programming language on platforms with only a few kBytes of flash memory makes sense and what advantages this brings to the development of embedded systems. \newline \newline In particular, the most common concepts (classes, templates, etc.) of the object-oriented language should be analyzed in order to make a statement about performance and memory consumption. For this purpose, the compiled code is analyzed and various benchmark tests are performed. In addition, the comparison with a classical functional programming language is presented. \newline \newline C/C++ is used as reference programming language in conjunction with the ARM Cortex-M architecture. This combination is very interesting for small and low-power IoT projects and is likely to prevail in the future. At the beginning, a state-of-the-art analysis is performed to list all available C/C++ compilers and to check which C/C++ extensions and versions are supported.}
 \keywords{Object-oriented programming, C/C++, Embedded Software, ARM Cortex}
 \acknowledgements{\blindtext}
 
@@ -222,8 +222,29 @@ Abbildung 4 gibt Schlussfolgernd noch mal einen kurzen Überblick in welchen Anw
 	\label{fig:3_5}
 \end{figure}
 
-\subsection{MCU Peripherie}
-\subsection{Sicherheits- Features}
+\subsection{MCU Peripherie und Sicherheits- Features}
+Der Trend neigt dazu das Mikrocontroller Peripherie immer komplexer wird und diese auch unabhängiger von der CPU operieren kann. Moderne Mikrocontroller haben neben den üblichen Peripherie Modulen wie Timern, ADC, DAC, UART, SPI oder I2C noch weitere Module welche für moderne IoT unerlässlich sind. Die nachfolgende Aufzählung listet einige dieser Module und beschreibt wozu diese von nützen sein könnten.
+
+\begin{itemize}
+	\item \textbf{Brown Out Detector (BOD)} - Möchte man die Betriebsspannung überwachen kann man den BOD so konfigurieren dass dieser ein Interrupt generiert sollte die Spannung ein bestimmtes Level unterschreiten. Dies ist vor allem bei batteriebetrieben Geräten sinnvoll um dann noch persistente Variablen im ROM abzuspeichern und wenn möglich in den Stromsparmodus zu wechseln.
+	\item \textbf{Direct memory access (DMA)} - Ein DMA ermöglicht es das Peripherie Module wie UART oder SPI direkt auf den Speicher zugreifen können ohne das die CPU involviert ist. Somit haben Kommunikations- Module direkten Zugriff auf den Sende- oder Empfangs Buffer und die CPU kann während dieser Zeit andere Aufgaben erledigen oder in den Schlaf Modus wechseln um Strom zu sparen.
+	\item \textbf{CRC Checksum} - Viele Protokolle benutzen eine CRC (cyclic redundancy check) Checksumme um die Daten auf Gültigkeit zu prüfen und um mögliche Bit Fehler zu erkennen. Der Algorithmus hierfür ist relativ simple und kann durchaus auch in Software implementiert werden jedoch benötigt dies relativ viel Rechenleistung und beansprucht je nach CPU relativ viel Zeit. Eine Implementierung in Hardware ist da viel effizienter. Jedoch ist das verwendete Polynom welcher bei Hardware Lösungen zum Einsatz kommt meist fix und kann nicht verändert werden.  
+	\item \textbf{Random Number} - Mehrere Technologien wie Bluetooth oder DALI (Digital Addressing Lighting Interface) benötigen einen Zufallsgenerator welcher für die Adressvergabe am Bus benötigt wird.  Auch Softwarebibliotheken wie die Standard C Bibliothek können darauf zugreifen wenn es um Funkionen wie \textit{srand()} oder \textit{rand()} geht.
+\end{itemize}
+
+
+
+\begin{itemize}
+	\item \textbf{Advanced Encryption Standard (AES)} - 
+	\item \textbf{SHA} - 
+	\item \textbf{Secure Boot} - 
+	\item \textbf{MMU} - 
+	\item \textbf{3DES} -
+\end{itemize}
+
+
+
+
 \section{Work-Flow und Tools in der embedded Entwicklung}
 \subsection{Entwicklungs- Umgebungen}
 \subsection{Test und Qualitäts- Management}
@@ -232,10 +253,7 @@ Abbildung 4 gibt Schlussfolgernd noch mal einen kurzen Überblick in welchen Anw
 \section{Programmiersprachen für die embedded Entwicklung}
 \subsection{Kompilierte Programmiersprachen}
 \subsection{Interpretierte Programmiersprachen}
-\section{Verfügbare C/C++ Compiler für die ARM Architektur}
-\subsection{GNU Arm Embedded Toolchain}
-\subsection{IAR Embedded Workbench}
-\subsection{ARM Compiler}
+
 \newpage
 
 
