@@ -3,7 +3,7 @@ int uart_init(int baud=9600,
               int parity=0,
               int stop=1){
   
-  return baud+Ndata+parity+stop;
+  return 0;
 }
 
 

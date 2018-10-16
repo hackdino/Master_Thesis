@@ -12,7 +12,7 @@ int uart_init(int baud,
   if(stop < 0)
     stop = 1;
   
-  return baud+Ndata+parity+stop;
+  return 0;
 }
 
 int ret=0;

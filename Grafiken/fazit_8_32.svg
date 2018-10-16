@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -183,7 +183,7 @@
            x="472.7514"
            y="179.0372" /></flowRegion><flowPara
          id="flowPara4566-7"
-         style="font-size:16px">Kleinere Chipgehäuse</flowPara><flowPara
+         style="font-size:16px">kleinere Chipgehäuse</flowPara><flowPara
          id="flowPara4568-87"
          style="font-size:16px" /></flowRoot>    <flowRoot
        xml:space="preserve"
@@ -231,7 +231,7 @@
            x="472.7514"
            y="179.0372" /></flowRegion><flowPara
          id="flowPara4566-7-0-9-9"
-         style="font-size:16px">Komplexe Systeme</flowPara><flowPara
+         style="font-size:16px">komplexe Systeme</flowPara><flowPara
          id="flowPara4568-87-9-1-9"
          style="font-size:16px" /></flowRoot>    <flowRoot
        xml:space="preserve"
